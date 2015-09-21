@@ -4,12 +4,17 @@
   "longName": "SE Fuzzy Text",
   "companyName": "Mattias Backlund",
   "versionCode": 1,
-  "versionLabel": "2.0.0",
+  "versionLabel": "3.0",
   "watchapp": {
     "watchface": true
   },
   "appKeys": {},
   "resources": {
     "media": []
-  }
+  },
+  "targetPlatforms": [
+    "aplite",
+    "basalt"
+  ],
+  "sdkVersion": "3"
 }

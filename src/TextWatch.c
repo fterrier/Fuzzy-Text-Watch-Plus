@@ -71,26 +71,28 @@ void makeAnimationsForLayer(Line *line, int delay)
 	GRect rect = layer_get_frame((Layer *)current);
 	rect.origin.x =  -144;
 	line->animation1 = property_animation_create_layer_frame((Layer *)current, NULL, &rect);
-	animation_set_duration(&line->animation1->animation, ANIMATION_DURATION);
-	animation_set_delay(&line->animation1->animation, delay);
-	animation_set_curve(&line->animation1->animation, AnimationCurveEaseIn); // Accelerate
+	Animation *animation = property_animation_get_animation(line->animation1);
+	animation_set_duration(animation, ANIMATION_DURATION);
+	animation_set_delay(animation, delay);
+	animation_set_curve(animation, AnimationCurveEaseIn); // Accelerate
 
 	// Configure animation for current layer to move in
 	GRect rect2 = layer_get_frame((Layer *)next);
 	rect2.origin.x = 0;
 	line->animation2 = property_animation_create_layer_frame((Layer *)next, NULL, &rect2);
-	animation_set_duration(&line->animation2->animation, ANIMATION_DURATION);
-	animation_set_delay(&line->animation2->animation, delay + ANIMATION_OUT_IN_DELAY);
-	animation_set_curve(&line->animation2->animation, AnimationCurveEaseOut); // Deaccelerate
+	animation = property_animation_get_animation(line->animation2);	
+	animation_set_duration(animation, ANIMATION_DURATION);
+	animation_set_delay(animation, delay + ANIMATION_OUT_IN_DELAY);
+	animation_set_curve(animation, AnimationCurveEaseOut); // Deaccelerate
 
 	// Set a handler to rearrange layers after animation is finished
-	animation_set_handlers(&line->animation2->animation, (AnimationHandlers) {
+	animation_set_handlers(animation, (AnimationHandlers) {
 		.stopped = (AnimationStoppedHandler)animationStoppedHandler
 	}, current);
 
 	// Start the animations
-	animation_schedule(&line->animation1->animation);
-	animation_schedule(&line->animation2->animation);	
+	animation_schedule(property_animation_get_animation(line->animation1));
+	animation_schedule(property_animation_get_animation(line->animation2));	
 }
 
 void updateLayerText(TextLayer* layer, char* text)
