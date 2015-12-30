@@ -1,5 +1,7 @@
 #include <pebble.h>
-
+#ifdef PBL_COLOR
+  #include "gcolor_definitions.h" // Allows the use of color
+#endif
 #include "num2words-en.h"
 
 #define DEBUG 0
@@ -16,6 +18,16 @@
 #else
   #define XRES 144
   #define YRES 168
+#endif
+
+#ifdef PBL_COLOR
+  #define BACKGROUND_COLOR GColorWhite
+  #define TEXT_NORMAL_COLOR GColorRed
+  #define TEXT_BOLD_COLOR GColorDarkCandyAppleRed
+#else
+  #define BACKGROUND_COLOR GColorBlack
+  #define TEXT_NORMAL_COLOR GColorWhite
+  #define TEXT_BOLD_COLOR GColorWhite
 #endif
 
 // Text alignment. Can be GTextAlignmentLeft, GTextAlignmentCenter or GTextAlignmentRight
@@ -139,7 +151,7 @@ bool needToUpdateLine(Line *line, char *nextValue)
 void configureBoldLayer(TextLayer *textlayer)
 {
 	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-	text_layer_set_text_color(textlayer, GColorWhite);
+	text_layer_set_text_color(textlayer, TEXT_BOLD_COLOR);
 	text_layer_set_background_color(textlayer, GColorClear);
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
@@ -148,7 +160,7 @@ void configureBoldLayer(TextLayer *textlayer)
 void configureLightLayer(TextLayer *textlayer)
 {
 	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
-	text_layer_set_text_color(textlayer, GColorWhite);
+	text_layer_set_text_color(textlayer, TEXT_NORMAL_COLOR);
 	text_layer_set_background_color(textlayer, GColorClear);
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
@@ -380,7 +392,7 @@ void init_line(Line* line)
 void handle_init() {
 	window = window_create();
 	window_stack_push(window, true);
-	window_set_background_color(window, GColorBlack);
+	window_set_background_color(window, BACKGROUND_COLOR);
 
 	// Init and load lines
 	for (int i = 0; i < NUM_LINES; i++)
