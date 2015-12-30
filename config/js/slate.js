@@ -174,6 +174,7 @@ var Zepto=function(){function L(t){return null==t?String(t):j[S.call(t)]||"objec
                 || !layout[i][j + 1] && !layout[i + 1][j]
                     ? ' rounded-br' : '';
 
+            var trueColor = color;
             if(options.sunny && color !== ENUMS.COLOR.EMPTY) {
               color = '#' + mappingSunny[color.replace('#', '').toLowerCase()];
             }
@@ -181,7 +182,7 @@ var Zepto=function(){function L(t){return null==t?String(t):j[S.call(t)]||"objec
             grid += '<i ' +
               'class="color-box ' + selectable + roundedTL +
                       roundedTR + roundedBL + roundedBR + '" ' +
-              'data-value="' + color.replace(/^#/, '0x') + '" ' +
+              'data-value="' + trueColor.replace(/^#/, '0x') + '" ' +
               'style="' +
                 'width:' + itemWidth + '%; ' +
                 'height:' + itemHeight + '%; ' +
