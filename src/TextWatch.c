@@ -10,6 +10,14 @@
 #define ROW_HEIGHT 37
 #define TOP_MARGIN 10
 
+#ifdef PBL_PLATFORM_CHALK
+  #define XRES 180
+  #define YRES 180
+#else
+  #define XRES 144
+  #define YRES 168
+#endif
+
 // Text alignment. Can be GTextAlignmentLeft, GTextAlignmentCenter or GTextAlignmentRight
 #define TEXT_ALIGN GTextAlignmentCenter
 
@@ -47,7 +55,7 @@ void animationStoppedHandler(struct Animation *animation, bool finished, void *c
 {
 	TextLayer *current = (TextLayer *)context;
 	GRect rect = layer_get_frame((Layer *)current);
-	rect.origin.x = 144;
+	rect.origin.x = XRES;
 	layer_set_frame((Layer *)current, rect);
 }
 
@@ -69,7 +77,7 @@ void makeAnimationsForLayer(Line *line, int delay)
 
 	// Configure animation for current layer to move out
 	GRect rect = layer_get_frame((Layer *)current);
-	rect.origin.x =  -144;
+	rect.origin.x =  -XRES;
 	line->animation1 = property_animation_create_layer_frame((Layer *)current, NULL, &rect);
 	Animation *animation = property_animation_get_animation(line->animation1);
 	animation_set_duration(animation, ANIMATION_DURATION);
@@ -171,12 +179,12 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 	numLines = i;
 
 	// Calculate y position of top Line
-	int ypos = (168 - numLines * ROW_HEIGHT) / 2 - TOP_MARGIN;
+	int ypos = (YRES - numLines * ROW_HEIGHT) / 2 - TOP_MARGIN;
 
 	// Set y positions for the lines
 	for (int i = 0; i < numLines; i++)
 	{
-		layer_set_frame((Layer *)lines[i].nextLayer, GRect(144, ypos, 144, 50));
+		layer_set_frame((Layer *)lines[i].nextLayer, GRect(XRES, ypos, XRES, 50));
 		ypos += ROW_HEIGHT;
 	}
 
@@ -351,8 +359,8 @@ void click_config_provider(ClickConfig **config, Window *window) {
 void init_line(Line* line)
 {
 	// Create layers with dummy position to the right of the screen
-	line->currentLayer = text_layer_create(GRect(144, 0, 144, 50));
-	line->nextLayer = text_layer_create(GRect(144, 0, 144, 50));
+	line->currentLayer = text_layer_create(GRect(XRES, 0, XRES, 50));
+	line->nextLayer = text_layer_create(GRect(XRES, 0, XRES, 50));
 
 	// Configure a style
 	configureLightLayer(line->currentLayer);
