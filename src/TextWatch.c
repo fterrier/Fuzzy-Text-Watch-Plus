@@ -6,6 +6,9 @@
 
 #define DEBUG 0
 
+// Data keys
+#define KEY_INVERSE 0
+
 #define NUM_LINES 4
 #define LINE_LENGTH 7
 #define BUFFER_SIZE (LINE_LENGTH + 2)
@@ -61,6 +64,11 @@ struct tm *t;
 
 int currentMinutes;
 int currentNLines;
+
+
+GColor8 normalTextColor;
+GColor8 boldTextColor;
+
 
 // Animation handler
 void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
@@ -151,7 +159,7 @@ bool needToUpdateLine(Line *line, char *nextValue)
 void configureBoldLayer(TextLayer *textlayer)
 {
 	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-	text_layer_set_text_color(textlayer, TEXT_BOLD_COLOR);
+	text_layer_set_text_color(textlayer, boldTextColor);
 	text_layer_set_background_color(textlayer, GColorClear);
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
@@ -160,7 +168,7 @@ void configureBoldLayer(TextLayer *textlayer)
 void configureLightLayer(TextLayer *textlayer)
 {
 	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
-	text_layer_set_text_color(textlayer, TEXT_NORMAL_COLOR);
+	text_layer_set_text_color(textlayer, normalTextColor);
 	text_layer_set_background_color(textlayer, GColorClear);
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
@@ -389,10 +397,45 @@ void init_line(Line* line)
 	line->animation2 = NULL;
 }
 
+static void inbox_received_handler(DictionaryIterator *iter, void *context) {
+  // High contrast selected?
+  Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
+  if(color_inverse_t && color_inverse_t->value->int8 > 0) {  // Read boolean as an integer
+    // Change color scheme
+    window_set_background_color(window, GColorBlack);
+    normalTextColor.argb = GColorWhite.argb;
+    boldTextColor.argb = GColorWhite.argb;
+
+    // Persist value
+    persist_write_bool(KEY_INVERSE, true);
+  } else {
+    // Change color scheme
+    window_set_background_color(window, GColorWhite);
+    normalTextColor.argb = GColorBlack.argb;
+    boldTextColor.argb = GColorBlack.argb;
+
+    // Persist value
+    persist_write_bool(KEY_INVERSE, false);
+  }
+}
+
+void refresh_time() {
+	time_t raw_time;
+	time(&raw_time);
+	t = localtime(&raw_time);
+	display_time(t);
+}
+
 void handle_init() {
 	window = window_create();
 	window_stack_push(window, true);
 	window_set_background_color(window, BACKGROUND_COLOR);
+
+	normalTextColor.argb=TEXT_NORMAL_COLOR.argb;
+	boldTextColor.argb=TEXT_BOLD_COLOR.argb;
+
+	app_message_register_inbox_received(inbox_received_handler);
+  	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
 	// Init and load lines
 	for (int i = 0; i < NUM_LINES; i++)
@@ -403,11 +446,7 @@ void handle_init() {
 	}
 
 	// Configure time on init
-	time_t raw_time;
-
-	time(&raw_time);
-	t = localtime(&raw_time);
-	display_time(t);
+	refresh_time();
 
 	// Subscribe to minute ticks
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);

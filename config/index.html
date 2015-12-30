@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <div class='item-container'>
+    <!--div class='item-container'>
       <div class='item-container-header'>Customizability</div>
       <div class='item-container-content'>
         <label class='item'>
@@ -39,18 +39,19 @@
       <div class='item-container-footer'>
         Choose the app's background color. Used if High Contrast Mode is not selected. Note: Only available on Basalt watches that support many colors.
       </div>
-    </div>
+    </div-->
 
     <div class='item-container'>
-      <div class='item-container-header'>Accessibility</div>
+      <div class='item-container-header'>Screen color</div>
       <div class='item-container-content'>
         <label class='item'>
-          High Contrast Mode
-          <input id='high_contrast_checkbox' type='checkbox' class='item-toggle'>
+          Inverse colors
+          <input id='inverse_color_checkbox' type='checkbox' class='item-toggle'>
         </label>
       </div>
       <div class='item-container-footer'>
-        This switches the app colors to a higher contrast set that promotes readability in low light.
+        The default colors are white text on black background. When this option is enabled you get black
+        text on white background instead.
       </div>
     </div>
 
@@ -62,17 +63,17 @@
   </body>
   <script>
   function getConfigData() {
-    var backgroundColorPicker = document.getElementById('background_color_picker');
-    var highContrastCheckbox = document.getElementById('high_contrast_checkbox');
+    //var backgroundColorPicker = document.getElementById('background_color_picker');
+    var inverseColorCheckbox = document.getElementById('inverse_color_checkbox');
  
     var options = {
-      'background_color': backgroundColorPicker.value,
-      'high_contrast': highContrastCheckbox.checked
+    //  'background_color': backgroundColorPicker.value,
+      'inverse_colors': inverseColorCheckbox.checked
     };
 
     // Save for next launch
-    localStorage['background_color'] = options['background_color'];
-    localStorage['high_contrast'] = options['high_contrast'];
+    //localStorage['background_color'] = options['background_color'];
+    localStorage['inverse_colors'] = options['inverse_colors'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
