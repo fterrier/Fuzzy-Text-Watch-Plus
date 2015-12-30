@@ -407,7 +407,7 @@ void handle_init() {
 
 	time(&raw_time);
 	t = localtime(&raw_time);
-	display_initial_time(t);
+	display_time(t);
 
 	// Subscribe to minute ticks
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
