@@ -4,8 +4,6 @@
 #endif
 #include "num2words-en.h"
 
-#define DEBUG 0
-
 // Data keys
 #define KEY_INVERSE 0
 
@@ -325,57 +323,6 @@ void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed)
   display_time(tick_time);
 }
 
-/** 
- * Debug methods. For quickly debugging enable debug macro on top to transform the watchface into
- * a standard app and you will be able to change the time with the up and down buttons
- */ 
-#if DEBUG
-
-void up_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-	(void)recognizer;
-	(void)window;
-	
-	t->tm_min += 5;
-	if (t->tm_min >= 60) {
-		t->tm_min = 0;
-		t->tm_hour += 1;
-		
-		if (t->tm_hour >= 24) {
-			t->tm_hour = 0;
-		}
-	}
-	display_time(t);
-}
-
-
-void down_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-	(void)recognizer;
-	(void)window;
-	
-	t->tm_min -= 5;
-	if (t->tm_min < 0) {
-		t->tm_min = 55;
-		t->tm_hour -= 1;
-		
-		if (t->tm_hour < 0) {
-			t->tm_hour = 23;
-		}
-	}
-	display_time(t);
-}
-
-void click_config_provider(ClickConfig **config, Window *window) {
-  (void)window;
-
-  config[BUTTON_ID_UP]->click.handler = (ClickHandler) up_single_click_handler;
-  config[BUTTON_ID_UP]->click.repeat_interval_ms = 100;
-
-  config[BUTTON_ID_DOWN]->click.handler = (ClickHandler) down_single_click_handler;
-  config[BUTTON_ID_DOWN]->click.repeat_interval_ms = 100;
-}
-
-#endif
-
 void init_line(Line* line)
 {
 	// Create layers with dummy position to the right of the screen
@@ -451,10 +398,6 @@ void handle_init() {
 	// Subscribe to minute ticks
 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
 
-#if DEBUG
-	// Button functionality
-	window_set_click_config_provider(window, (ClickConfigProvider) click_config_provider);
-#endif
 }
 
 void destroy_line(Line* line)
