@@ -58,8 +58,6 @@ typedef struct {
 
 Line lines[NUM_LINES];
 
-struct tm *t;
-
 int currentMinutes;
 int currentNLines;
 
@@ -262,7 +260,7 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 }
 
 // Update screen based on new time
-void display_time(struct tm *t)
+void display_time(struct tm *t, bool force)
 {
 	// The current time text will be stored in the following strings
 	char textLine[NUM_LINES][BUFFER_SIZE];
@@ -274,7 +272,7 @@ void display_time(struct tm *t)
 
 	int delay = 0;
 	for (int i = 0; i < NUM_LINES; i++) {
-		if (nextNLines != currentNLines || needToUpdateLine(&lines[i], textLine[i])) {
+		if (force || nextNLines != currentNLines || needToUpdateLine(&lines[i], textLine[i])) {
 			updateLineTo(&lines[i], textLine[i], delay);
 			delay += ANIMATION_STAGGER_TIME;
 		}
@@ -320,7 +318,7 @@ void display_initial_time(struct tm *t)
 // Time handler called every minute by the system
 void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed)
 {
-  display_time(tick_time);
+  display_time(tick_time, false);
 }
 
 void init_line(Line* line)
@@ -344,33 +342,36 @@ void init_line(Line* line)
 	line->animation2 = NULL;
 }
 
-static void inbox_received_handler(DictionaryIterator *iter, void *context) {
-  // High contrast selected?
-  Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
-  if(color_inverse_t && color_inverse_t->value->int8 > 0) {  // Read boolean as an integer
-    // Change color scheme
-    window_set_background_color(window, GColorBlack);
-    normalTextColor.argb = GColorWhite.argb;
-    boldTextColor.argb = GColorWhite.argb;
-
-    // Persist value
-    persist_write_bool(KEY_INVERSE, true);
-  } else {
-    // Change color scheme
-    window_set_background_color(window, GColorWhite);
-    normalTextColor.argb = GColorBlack.argb;
-    boldTextColor.argb = GColorBlack.argb;
-
-    // Persist value
-    persist_write_bool(KEY_INVERSE, false);
-  }
-}
-
 void refresh_time() {
 	time_t raw_time;
 	time(&raw_time);
-	t = localtime(&raw_time);
-	display_time(t);
+	struct tm *t = localtime(&raw_time);
+	display_time(t, true);
+}
+
+void inbox_received_handler(DictionaryIterator *iter, void *context) {
+  // High contrast selected?
+  Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
+  if(color_inverse_t) {
+  	if (color_inverse_t->value->int8 > 0) {  // Read boolean as an integer
+	    // Change color scheme
+	    window_set_background_color(window, GColorBlack);
+	    normalTextColor.argb = GColorWhite.argb;
+	    boldTextColor.argb = GColorWhite.argb;
+
+	    // Persist value
+	    persist_write_bool(KEY_INVERSE, true);
+	} else {
+	    // Change color scheme
+	    window_set_background_color(window, GColorWhite);
+	    normalTextColor.argb = GColorBlack.argb;
+	    boldTextColor.argb = GColorBlack.argb;
+
+	    // Persist value
+	    persist_write_bool(KEY_INVERSE, false);
+	}
+    refresh_time();
+  }
 }
 
 void handle_init() {
