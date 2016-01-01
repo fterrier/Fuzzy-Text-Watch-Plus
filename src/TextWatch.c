@@ -21,16 +21,6 @@
   #define YRES 168
 #endif
 
-#ifdef PBL_COLOR
-  #define BACKGROUND_COLOR GColorWhite
-  #define TEXT_NORMAL_COLOR GColorRed
-  #define TEXT_BOLD_COLOR GColorDarkCandyAppleRed
-#else
-  #define BACKGROUND_COLOR GColorBlack
-  #define TEXT_NORMAL_COLOR GColorWhite
-  #define TEXT_BOLD_COLOR GColorWhite
-#endif
-
 // Text alignment. Can be GTextAlignmentLeft, GTextAlignmentCenter or GTextAlignmentRight
 #define TEXT_ALIGN GTextAlignmentCenter
 
@@ -354,19 +344,17 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
   if(color_inverse_t) {
   	if (color_inverse_t->value->int8 > 0) {  // Read boolean as an integer
-	    // Change color scheme
-	    window_set_background_color(window, GColorBlack);
-	    normalTextColor.argb = GColorWhite.argb;
-	    boldTextColor.argb = GColorWhite.argb;
-
-	    // Persist value
-	    persist_write_bool(KEY_INVERSE, true);
-	} else {
-	    // Change color scheme
+	    // Set inverse colors
 	    window_set_background_color(window, GColorWhite);
 	    normalTextColor.argb = GColorBlack.argb;
 	    boldTextColor.argb = GColorBlack.argb;
-
+	    // Persist value
+	    persist_write_bool(KEY_INVERSE, true);
+	} else {
+	    // Set normal colors
+	    window_set_background_color(window, GColorBlack);
+	    normalTextColor.argb = GColorWhite.argb;
+	    boldTextColor.argb = GColorWhite.argb;
 	    // Persist value
 	    persist_write_bool(KEY_INVERSE, false);
 	}
@@ -377,10 +365,16 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
 void handle_init() {
 	window = window_create();
 	window_stack_push(window, true);
-	window_set_background_color(window, BACKGROUND_COLOR);
 
-	normalTextColor.argb=TEXT_NORMAL_COLOR.argb;
-	boldTextColor.argb=TEXT_BOLD_COLOR.argb;
+	if (persist_read_bool(KEY_INVERSE)) {
+		window_set_background_color(window, GColorWhite);	
+		normalTextColor.argb=GColorBlack.argb;
+		boldTextColor.argb=GColorBlack.argb;
+	} else {
+		window_set_background_color(window, GColorBlack);	
+		normalTextColor.argb=GColorWhite.argb;
+		boldTextColor.argb=GColorWhite.argb;
+	}
 
 	app_message_register_inbox_received(inbox_received_handler);
   	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
