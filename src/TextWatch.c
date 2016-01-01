@@ -197,19 +197,9 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 	return numLines;
 }
 
-void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], char format[])
+void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[])
 {
-	int length = NUM_LINES * BUFFER_SIZE + 1;
-	char timeStr[length];
-	time_to_words(hours, minutes, timeStr, length);
-	
-	// Empty all lines
-	for (int i = 0; i < NUM_LINES; i++)
-	{
-		lines[i][0] = '\0';
-	}
-
-	char *start = timeStr;
+	char *start = str;
 	char *end = strstr(start, " ");
 	int l = 0;
 	while (end != NULL && l < NUM_LINES) {
@@ -228,7 +218,7 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 
 		// Can we add another word to the line?
 		if (format[l] == ' ' && *(end + 1) != '*'    // are both lines formatted normal?
-			&& end - start < LINE_APPEND_LIMIT - 1)  // is the first word is short enough?
+			&& end - start < LINE_APPEND_LIMIT - 1)  // is the first word short enough?
 		{
 			// See if next word fits
 			char *try = strstr(end + 1, " ");
@@ -247,6 +237,21 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 		end = strstr(start, " ");
 	}
 	
+}
+
+void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], char format[])
+{
+	int length = NUM_LINES * BUFFER_SIZE + 1;
+	char timeStr[length];
+	time_to_words(hours, minutes, timeStr, length);
+	
+	// Empty all lines
+	for (int i = 0; i < NUM_LINES; i++)
+	{
+		lines[i][0] = '\0';
+	}
+
+	string_to_lines(timeStr, lines, format);
 }
 
 // Update screen based on new time
