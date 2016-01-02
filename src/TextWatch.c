@@ -35,6 +35,9 @@
 // We can add a new word to a line if there are at least this many characters free after
 #define LINE_APPEND_LIMIT (LINE_LENGTH - LINE_APPEND_MARGIN)
 
+// How long to show messages, in seconds
+#define MESSAGE_DISPLAY_TIME 3
+
 Window *window;
 
 typedef struct {
@@ -51,10 +54,14 @@ Line lines[NUM_LINES];
 int currentMinutes;
 int currentNLines;
 
-
+// Corrent color of normal text
 GColor8 normalTextColor;
+// Corrent color of bold text
 GColor8 boldTextColor;
 
+// Time in seconds since epoch when a displayed message should be removed.
+// Only set to non zero when a message is displaying.
+time_t resetMessageTime = 0;
 
 // Animation handler
 void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
@@ -167,19 +174,17 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 	// Set bold layer.
 	int i;
 	for (i = 0; i < NUM_LINES; i++) {
-		if (strlen(text[i]) > 0) {
-			if (format[i] == 'b')
-			{
-				configureBoldLayer(lines[i].nextLayer);
-			}
-			else
-			{
-				configureLightLayer(lines[i].nextLayer);
-			}
+		if (strlen(text[i]) == 0) {
+			break;
+		}
+
+		if (format[i] == 'b')
+		{
+			configureBoldLayer(lines[i].nextLayer);
 		}
 		else
 		{
-			break;
+			configureLightLayer(lines[i].nextLayer);
 		}
 	}
 	numLines = i;
@@ -202,6 +207,13 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 	char *start = str;
 	char *end = strstr(start, " ");
 	int l = 0;
+
+	// Empty all lines
+	for (int i = 0; i < NUM_LINES; i++)
+	{
+		lines[i][0] = '\0';
+	}
+
 	while (end != NULL && l < NUM_LINES) {
 		// Check word for bold prefix
 		if (*start == '*' && end - start > 1)
@@ -236,7 +248,6 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 		start = end + 1;
 		end = strstr(start, " ");
 	}
-	
 }
 
 void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], char format[])
@@ -245,18 +256,40 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 	char timeStr[length];
 	time_to_words(hours, minutes, timeStr, length);
 	
-	// Empty all lines
-	for (int i = 0; i < NUM_LINES; i++)
-	{
-		lines[i][0] = '\0';
-	}
-
 	string_to_lines(timeStr, lines, format);
+}
+
+// Update screen based on new time
+void display_message(char *message, int displayTime)
+{
+	// The current time text will be stored in the following strings
+	char textLine[NUM_LINES][BUFFER_SIZE];
+	char format[NUM_LINES];
+
+	string_to_lines(message, textLine, format);
+	
+	int nextNLines = configureLayersForText(textLine, format);
+
+	int delay = 0;
+	for (int i = 0; i < NUM_LINES; i++) {
+	    updateLineTo(&lines[i], textLine[i], delay);
+	    delay += ANIMATION_STAGGER_TIME;
+	}
+	
+	currentNLines = nextNLines;
+
+	time(&resetMessageTime);
+	resetMessageTime += displayTime;
 }
 
 // Update screen based on new time
 void display_time(struct tm *t, bool force)
 {
+	if (resetMessageTime != 0) // Don't update time if a message is showing
+	{
+		return;
+	}
+
 	// The current time text will be stored in the following strings
 	char textLine[NUM_LINES][BUFFER_SIZE];
 	char format[NUM_LINES];
@@ -276,44 +309,26 @@ void display_time(struct tm *t, bool force)
 	currentNLines = nextNLines;
 }
 
-void initLineForStart(Line* line)
-{
-	// Switch current and next layer
-	TextLayer* tmp  = line->currentLayer;
-	line->currentLayer = line->nextLayer;
-	line->nextLayer = tmp;
-
-	// Move current layer to screen;
-	GRect rect = layer_get_frame((Layer *)line->currentLayer);
-	rect.origin.x = 0;
-	layer_set_frame((Layer *)line->currentLayer, rect);
-}
-
-// Update screen without animation first time we start the watchface
-void display_initial_time(struct tm *t)
-{
-	// The current time text will be stored in the following strings
-	char textLine[NUM_LINES][BUFFER_SIZE];
-	char format[NUM_LINES];
-
-	time_to_lines(t->tm_hour, t->tm_min, textLine, format);
-
-	// This configures the nextLayer for each line
-	currentNLines = configureLayersForText(textLine, format);
-
-	// Set the text and configure layers to the start position
-	for (int i = 0; i < currentNLines; i++)
-	{
-		updateLayerText(lines[i].nextLayer, textLine[i]);
-		// This call switches current- and nextLayer
-		initLineForStart(&lines[i]);
-	}	
-}
-
 // Time handler called every minute by the system
-void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed)
+void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 {
-  display_time(tick_time, false);
+  bool resetMessage = false;
+  if (resetMessageTime != 0)
+  {
+  	time_t now;
+  	time(&now);
+  	if (now >= resetMessageTime)
+  	{
+  		resetMessage = true;
+  		resetMessageTime = 0;
+  	}
+  }
+
+  if (resetMessage || 
+  	  (units_changed & MINUTE_UNIT) != 0)
+  {
+	display_time(tick_time, false);
+  }
 }
 
 void init_line(Line* line)
@@ -337,11 +352,15 @@ void init_line(Line* line)
 	line->animation2 = NULL;
 }
 
-void refresh_time() {
+struct tm *get_localtime()
+{
 	time_t raw_time;
 	time(&raw_time);
-	struct tm *t = localtime(&raw_time);
-	display_time(t, true);
+	return localtime(&raw_time);
+}
+
+void refresh_time() {
+	display_time(get_localtime(), true);
 }
 
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
@@ -393,10 +412,13 @@ void handle_init() {
 	}
 
 	// Configure time on init
-	refresh_time();
+	char greeting[20];
+	time_to_greeting(get_localtime()->tm_hour, greeting);
+	display_message(greeting, MESSAGE_DISPLAY_TIME);
+	//refresh_time();
 
 	// Subscribe to minute ticks
-	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
+	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 
 }
 

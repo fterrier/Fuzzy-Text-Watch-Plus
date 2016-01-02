@@ -170,3 +170,17 @@ void time_to_words(int hours, int minutes, char* words, size_t length) {
   remaining -= append_string(words, remaining, " ");
 }
 
+void time_to_greeting(int hour, char* greeting)
+{
+  if (hour < 5 || hour >= 22) {
+    strcpy(greeting, "God natt ");
+  } else if (hour < 11) {
+    strcpy(greeting, "God morgon ");
+  } else if (hour < 17) {
+    strcpy(greeting, "God dag ");
+  } else {
+    strcpy(greeting, "God afton ");
+  }
+}
+
+
