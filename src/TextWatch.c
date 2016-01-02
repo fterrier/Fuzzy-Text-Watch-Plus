@@ -386,6 +386,14 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   }
 }
 
+void bt_handler(bool connected) {
+	if (!connected) {
+		vibes_long_pulse();
+		light_enable_interaction();
+		display_message("Var är din telefon ", MESSAGE_DISPLAY_TIME * 2);
+	}
+}
+
 void handle_init() {
 	window = window_create();
 	window_stack_push(window, true);
@@ -419,6 +427,11 @@ void handle_init() {
 
 	// Subscribe to minute ticks
 	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+
+	// Subscribe to bluetooth events
+	connection_service_subscribe((ConnectionHandlers) {
+	  .pebble_app_connection_handler = bt_handler
+	});
 
 }
 
