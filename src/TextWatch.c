@@ -4,6 +4,9 @@
 #endif
 #include "num2words-en.h"
 
+// Make watch switch time every 5 seconds
+#define DEBUG 1
+
 // Data keys
 #define KEY_INVERSE 0
 
@@ -294,7 +297,11 @@ void display_time(struct tm *t, bool force)
 	char textLine[NUM_LINES][BUFFER_SIZE];
 	char format[NUM_LINES];
 
+#if DEBUG == 1
+	time_to_lines(t->tm_hour, t->tm_sec, textLine, format);
+#else
 	time_to_lines(t->tm_hour, t->tm_min, textLine, format);
+#endif
 	
 	int nextNLines = configureLayersForText(textLine, format);
 
@@ -325,7 +332,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
   }
 
   if (resetMessage || 
-  	  (units_changed & MINUTE_UNIT) != 0)
+  	  (units_changed & MINUTE_UNIT) != 0 ||
+  	  DEBUG)
   {
 	display_time(tick_time, false);
   }
@@ -420,8 +428,11 @@ void handle_init() {
 	}
 
 	// Configure time on init
-	char greeting[20];
+	char greeting[32];
 	time_to_greeting(get_localtime()->tm_hour, greeting);
+#if DEBUG == 1
+	strcat(greeting, " Debug ");
+#endif
 	display_message(greeting, MESSAGE_DISPLAY_TIME);
 	//refresh_time();
 
