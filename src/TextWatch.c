@@ -5,7 +5,7 @@
 #include "num2words-en.h"
 
 // Make watch switch time every 5 seconds
-#define DEBUG 1
+#define DEBUG 0
 
 // Data keys
 #define KEY_INVERSE 0
@@ -34,9 +34,10 @@
 // Delay from the start of the current layer going out until the next layer slides in
 #define ANIMATION_OUT_IN_DELAY 100
 
-#define LINE_APPEND_MARGIN 0
-// We can add a new word to a line if there are at least this many characters free after
-#define LINE_APPEND_LIMIT (LINE_LENGTH - LINE_APPEND_MARGIN)
+
+#define LINE_APPEND_MARGIN 2
+// We can add a new word to a line if it is no longer than this
+#define LINE_APPEND_LIMIT (LINE_LENGTH - LINE_APPEND_MARGIN + 1)
 
 // How long to show messages, in seconds
 #define MESSAGE_DISPLAY_TIME 3
@@ -231,13 +232,16 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 			format[l] = ' ';
 		}
 
+		char *nextWord = end + 1;
+
 		// Can we add another word to the line?
-		if (format[l] == ' ' && *(end + 1) != '*'    // are both lines formatted normal?
-			&& end - start < LINE_APPEND_LIMIT - 1)  // is the first word short enough?
+		if (format[l] == ' ' && *nextWord != '*'  // are both lines formatted normal?
+			&& *nextWord != ' '                   // no no-join annotation (double space)
+			&& end - start < LINE_APPEND_LIMIT)  // is the first word short enough?
 		{
 			// See if next word fits
 			char *try = strstr(end + 1, " ");
-			if (try != NULL && try - start <= LINE_APPEND_LIMIT)
+			if (try != NULL && try - start <= LINE_LENGTH)
 			{
 				end = try;
 			}
@@ -249,6 +253,7 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 
 		// Look for next word
 		start = end + 1;
+		while (*start == ' ') start++; // Skip all spaces
 		end = strstr(start, " ");
 	}
 }
