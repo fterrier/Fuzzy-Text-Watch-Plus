@@ -176,7 +176,7 @@ void time_to_greeting(int hour, char* greeting)
     strcpy(greeting, "God natt ");
   } else if (hour < 11) {
 #ifdef PBL_PLATFORM_CHALK
-    strcpy(greeting, "God mor- gon ");
+    strcpy(greeting, "God morgon ");
 #else
     strcpy(greeting, "God mor- gon ");
 #endif
