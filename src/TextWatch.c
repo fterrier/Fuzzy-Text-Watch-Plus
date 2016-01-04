@@ -9,6 +9,9 @@
 
 // Data keys
 #define KEY_INVERSE 0
+#define KEY_BACKGROUND 1
+#define KEY_REGULAR_TEXT 2
+#define KEY_BOLD_TEXT 3
 
 #define NUM_LINES 4
 #define LINE_LENGTH 7
@@ -59,7 +62,7 @@ int currentMinutes;
 int currentNLines;
 
 // Corrent color of normal text
-GColor8 normalTextColor;
+GColor8 regularTextColor;
 // Corrent color of bold text
 GColor8 boldTextColor;
 
@@ -167,7 +170,7 @@ void configureBoldLayer(TextLayer *textlayer)
 void configureLightLayer(TextLayer *textlayer)
 {
 	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
-	text_layer_set_text_color(textlayer, normalTextColor);
+	text_layer_set_text_color(textlayer, regularTextColor);
 	text_layer_set_background_color(textlayer, GColorClear);
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
@@ -379,26 +382,53 @@ void refresh_time() {
 }
 
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
-  // High contrast selected?
+
+#ifdef PBL_PLATFORM_APLITE
+
+  // Inverse colors?
   Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
   if(color_inverse_t) {
   	if (color_inverse_t->value->int8 > 0) {  // Read boolean as an integer
 	    // Set inverse colors
 	    window_set_background_color(window, GColorWhite);
-	    normalTextColor.argb = GColorBlack.argb;
+	    regularTextColor.argb = GColorBlack.argb;
 	    boldTextColor.argb = GColorBlack.argb;
 	    // Persist value
 	    persist_write_bool(KEY_INVERSE, true);
 	} else {
 	    // Set normal colors
 	    window_set_background_color(window, GColorBlack);
-	    normalTextColor.argb = GColorWhite.argb;
+	    regularTextColor.argb = GColorWhite.argb;
 	    boldTextColor.argb = GColorWhite.argb;
 	    // Persist value
 	    persist_write_bool(KEY_INVERSE, false);
 	}
-    refresh_time();
   }
+
+#else
+
+  Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND);
+  if(background_color_t) {
+  	GColor8 bg_color;
+
+  	//APP_LOG(APP_LOG_LEVEL_DEBUG, "background color value: %d", (uint8_t)background_color_t->value->uint8);
+  	bg_color.argb = background_color_t->value->uint8;
+  	window_set_background_color(window, bg_color);  	
+  }
+
+  Tuple *regular_text_t = dict_find(iter, KEY_REGULAR_TEXT);
+  if(regular_text_t) {
+  	regularTextColor.argb = regular_text_t->value->uint8;
+  }
+
+  Tuple *bold_text_t = dict_find(iter, KEY_BOLD_TEXT);
+  if(bold_text_t) {
+  	boldTextColor.argb = bold_text_t->value->uint8;
+  }
+
+#endif
+
+  refresh_time();
 }
 
 void bt_handler(bool connected) {
@@ -415,11 +445,11 @@ void handle_init() {
 
 	if (persist_read_bool(KEY_INVERSE)) {
 		window_set_background_color(window, GColorWhite);	
-		normalTextColor.argb=GColorBlack.argb;
+		regularTextColor.argb=GColorBlack.argb;
 		boldTextColor.argb=GColorBlack.argb;
 	} else {
 		window_set_background_color(window, GColorBlack);	
-		normalTextColor.argb=GColorWhite.argb;
+		regularTextColor.argb=GColorWhite.argb;
 		boldTextColor.argb=GColorWhite.argb;
 	}
 

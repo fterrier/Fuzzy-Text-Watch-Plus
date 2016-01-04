@@ -14,34 +14,18 @@
     color: #888888;
     text-align: center;
   }
+
+  .bw-config, .color-config {
+    display: none;
+  }
+
   </style>
   </head>
 
   <body>
-    <h1 class='title'>Slate Example Configuration</h1>
+    <h1 class='title'>Fuzzy Text - Configuration</h1>
 
-    <div class='item-container'>
-      <div class='item-container-content'>
-        <div class='item'>
-          Use this configuration page to choose the settings you would like applied to this app.
-        </div>
-      </div>
-    </div>
-
-    <!--div class='item-container'>
-      <div class='item-container-header'>Customizability</div>
-      <div class='item-container-content'>
-        <label class='item'>
-          Background Color
-          <input id='background_color_picker' type='text' class='item-color item-color-sunny' value='#000000'>
-        </label>
-      </div>
-      <div class='item-container-footer'>
-        Choose the app's background color. Used if High Contrast Mode is not selected. Note: Only available on Basalt watches that support many colors.
-      </div>
-    </div-->
-
-    <div class='item-container'>
+    <div class='item-container bw-config'>
       <div class='item-container-header'>Screen color</div>
       <div class='item-container-content'>
         <label class='item'>
@@ -55,6 +39,43 @@
       </div>
     </div>
 
+    <div class='item-container color-config'>
+      <div class='item-container-header'>Colors</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Background Color
+          <input id='background_color_picker' type='text' class='item-color item-color-sunny' value='#000000'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        The watchface background color.
+      </div>
+    </div>
+
+    <div class='item-container color-config'>
+      <div class='item-container-content'>
+        <label class='item'>
+          Regular text color
+          <input id='regular_color_picker' type='text' class='item-color item-color-sunny' value='#FFFFFF'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        The watchface REGULAR text color, this is usually used for everything except the hours.
+      </div>
+    </div>
+
+    <div class='item-container color-config'>
+      <div class='item-container-content'>
+        <label class='item'>
+          Bold text color
+          <input id='bold_color_picker' type='text' class='item-color item-color-sunny' value='#FFFFFF'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        The watchface BOLD text color, this is usually used for the hours.
+      </div>
+    </div>
+
     <div class='item-container'>
       <div class='button-container'>
         <input id='submit_button' type='button' class='item-button' value='SUBMIT'>
@@ -62,18 +83,25 @@
     </div>
   </body>
   <script>
+
   function getConfigData() {
-    //var backgroundColorPicker = document.getElementById('background_color_picker');
     var inverseColorCheckbox = document.getElementById('inverse_color_checkbox');
+    var backgroundColorPicker = document.getElementById('background_color_picker');
+    var regularColorPicker = document.getElementById('regular_color_picker');
+    var boldColorPicker = document.getElementById('bold_color_picker');
  
     var options = {
-    //  'background_color': backgroundColorPicker.value,
-      'inverse_colors': inverseColorCheckbox.checked
+      'inverse_colors': inverseColorCheckbox.checked,
+      'background_color': backgroundColorPicker.value,
+      'regular_color': regularColorPicker.value,
+      'bold_color': boldColorPicker.value
     };
 
     // Save for next launch
-    //localStorage['background_color'] = options['background_color'];
     localStorage['inverse_colors'] = options['inverse_colors'];
+    localStorage['background_color'] = options['background_color'];
+    localStorage['regular_color'] = options['regular_color'];
+    localStorage['bold_color'] = options['bold_color'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -101,14 +129,32 @@
   });
 
   (function() {
-    //var backgroundColorPicker = document.getElementById('background_color_picker');
     var inverseColorCheckbox = document.getElementById('inverse_color_checkbox');
+    var backgroundColorPicker = document.getElementById('background_color_picker');
+    var regularColorPicker = document.getElementById('regular_color_picker');
+    var boldColorPicker = document.getElementById('bold_color_picker');
+
+    console.log(localStorage);
 
     // Load any previously saved configuration, if available
-    if(localStorage['inverse_colors']) {
-      inverseColorCheckbox.checked = JSON.parse(localStorage['inverse_colors']);
-      //backgroundColorPicker.value = localStorage['background_color'];
+    if(localStorage['inverse_colors']) inverseColorCheckbox.checked = JSON.parse(localStorage['inverse_colors']);
+    if(localStorage['background_color']) backgroundColorPicker.value = localStorage['background_color'];
+    if(localStorage['regular_color']) regularColorPicker.value = localStorage['regular_color'];
+    if(localStorage['bold_color']) boldColorPicker.value = localStorage['bold_color'];
+
+
+    var selected_configs;
+
+    if (getQueryParam("bw")) {
+      selected_configs = document.getElementsByClassName("bw-config");
+    } else {
+      selected_configs = document.getElementsByClassName("color-config");
     }
+
+    for (var i = 0; i < selected_configs.length; i++) {
+      selected_configs[i].style.display = "block";
+    }
+
   })();
   </script>
 </html>

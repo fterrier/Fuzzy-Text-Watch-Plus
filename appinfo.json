@@ -12,7 +12,10 @@
     "configurable"
   ],
   "appKeys": {
-    "KEY_INVERSE": 0
+    "KEY_INVERSE": 0,
+    "KEY_BACKGROUND": 1,
+    "KEY_REGULAR_TEXT": 2,
+    "KEY_BOLD_TEXT": 3
     },
   "resources": {
     "media": [

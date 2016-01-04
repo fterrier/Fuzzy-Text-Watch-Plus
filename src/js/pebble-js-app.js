@@ -3,7 +3,12 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/';
+  var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html';
+
+  if (getWatchVersion() < 3) { // Black n white
+    url = url + "?bw=1";
+  }
+
   console.log('Showing configuration page: ' + url);
 
   Pebble.openURL(url);
@@ -14,7 +19,17 @@ Pebble.addEventListener('webviewclosed', function(e) {
   console.log('Configuration page returned: ' + JSON.stringify(configData));
 
   var dict = {};
+  // Inverse BW colors
   dict['KEY_INVERSE'] = configData['inverse_colors'] ? 1 : 0;  // Send a boolean as an integer
+  // Background color
+  var argb = hexColorToARGB2222(configData['background_color']);
+  if (argb > 0) dict['KEY_BACKGROUND'] = argb;
+  // Regular text color
+  argb = hexColorToARGB2222(configData['regular_color']);
+  if (argb > 0) dict['KEY_REGULAR_TEXT'] = argb;
+  // Bold text color
+  argb = hexColorToARGB2222(configData['bold_color']);
+  if (argb > 0) dict['KEY_BOLD_TEXT'] = argb;
 
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {
@@ -23,3 +38,50 @@ Pebble.addEventListener('webviewclosed', function(e) {
     console.log('Send failed!');
   });
 });
+
+function hexColorToARGB2222(color) {
+  if (color.length == 8) {
+    var r = parseInt(color.substring(2,3), 16) >> 2;
+    var g = parseInt(color.substring(4,5), 16) >> 2;
+    var b = parseInt(color.substring(6,7), 16) >> 2;
+    //console.log("background color: " + r + " " + g + " " + b);
+    var col = 3;  //alpha
+    col = (col << 2) + r;
+    col = (col << 2) + g;
+    col = (col << 2) + b;
+    return col;
+  }
+
+  return 0;
+}
+
+function getWatchVersion() {
+  // 1 = Pebble OG
+  // 2 = Pebble Steel
+  // 3 = Pebble Time
+  // 4 = Pebble Time Steel
+  // 5 = Pebble Time Round
+
+  var watch_version = 1;
+ 
+  if(Pebble.getActiveWatchInfo) {
+    // Available for use!
+    var watch_name = Pebble.getActiveWatchInfo().model;
+ 
+    if (watch_name.indexOf("pebble_time_steel") >= 0) {
+      watch_version = 4;
+    } else if (watch_name.indexOf("pebble_time_round") >= 0) {
+      watch_version = 5;
+    } else if (watch_name.indexOf("qemu_platform_chalk") >= 0) {
+      watch_version = 5;
+    } else if (watch_name.indexOf("pebble_time") >= 0) {
+      watch_version = 3;
+    } else if (watch_name.indexOf("qemu_platform_basalt") >= 0) {
+      watch_version = 3;
+    } else if (watch_name.indexOf("pebble_steel") >= 0) {
+      watch_version = 2;
+    }
+  }
+  
+  return watch_version;
+}
