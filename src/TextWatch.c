@@ -82,6 +82,7 @@ void makeAnimationsForLayer(Line *line, int delay)
 	TextLayer *current = line->currentLayer;
 	TextLayer *next = line->nextLayer;
 
+#ifdef PBL_PLATFORM_APLITE
 	// Destroy old animations 
 	if (line->animation1 != NULL)
 	{
@@ -91,6 +92,7 @@ void makeAnimationsForLayer(Line *line, int delay)
 	{
 		 property_animation_destroy(line->animation2);
 	}
+#endif
 
 	// Configure animation for current layer to move out
 	GRect rect = layer_get_frame((Layer *)current);
