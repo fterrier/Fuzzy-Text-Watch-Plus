@@ -435,7 +435,9 @@ void bt_handler(bool connected) {
 	if (!connected) {
 		vibes_long_pulse();
 		light_enable_interaction();
-		display_message("Var är din telefon ", MESSAGE_DISPLAY_TIME * 2);
+		char message[24];
+		strcpy(message, "Var är din telefon ");
+		display_message(message, MESSAGE_DISPLAY_TIME * 4);
 	}
 }
 
