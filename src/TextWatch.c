@@ -13,19 +13,21 @@
 #define KEY_REGULAR_TEXT 2
 #define KEY_BOLD_TEXT 3
 
+#ifdef PBL_PLATFORM_CHALK
+  // Pebble round screen resolution
+  #define XRES 180
+  #define YRES 180
+#else
+  // Pebble square screen resolution ;)
+  #define XRES 144
+  #define YRES 168
+#endif
+
 #define NUM_LINES 4
 #define LINE_LENGTH 7
 #define BUFFER_SIZE (LINE_LENGTH + 2)
 #define ROW_HEIGHT 37
 #define TOP_MARGIN 10
-
-#ifdef PBL_PLATFORM_CHALK
-  #define XRES 180
-  #define YRES 180
-#else
-  #define XRES 144
-  #define YRES 168
-#endif
 
 // Text alignment. Can be GTextAlignmentLeft, GTextAlignmentCenter or GTextAlignmentRight
 #define TEXT_ALIGN GTextAlignmentCenter
@@ -383,7 +385,31 @@ void refresh_time() {
 
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
 
-#ifdef PBL_PLATFORM_APLITE
+#ifdef PBL_COLOR
+
+  Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND);
+  if(background_color_t) {
+  	GColor8 bg_color;
+
+  	//APP_LOG(APP_LOG_LEVEL_DEBUG, "background color value: %d", (uint8_t)background_color_t->value->uint8);
+  	bg_color.argb = background_color_t->value->uint8;
+  	window_set_background_color(window, bg_color);  
+  	persist_write_int(KEY_BACKGROUND, bg_color.argb);	
+  }
+
+  Tuple *regular_text_t = dict_find(iter, KEY_REGULAR_TEXT);
+  if(regular_text_t) {
+  	regularTextColor.argb = regular_text_t->value->uint8;
+  	persist_write_int(KEY_REGULAR_TEXT, regularTextColor.argb);
+  }
+
+  Tuple *bold_text_t = dict_find(iter, KEY_BOLD_TEXT);
+  if(bold_text_t) {
+  	boldTextColor.argb = bold_text_t->value->uint8;
+  	persist_write_int(KEY_BOLD_TEXT, boldTextColor.argb);
+  }
+
+#else
 
   // Inverse colors?
   Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
@@ -405,27 +431,6 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
 	}
   }
 
-#else
-
-  Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND);
-  if(background_color_t) {
-  	GColor8 bg_color;
-
-  	//APP_LOG(APP_LOG_LEVEL_DEBUG, "background color value: %d", (uint8_t)background_color_t->value->uint8);
-  	bg_color.argb = background_color_t->value->uint8;
-  	window_set_background_color(window, bg_color);  	
-  }
-
-  Tuple *regular_text_t = dict_find(iter, KEY_REGULAR_TEXT);
-  if(regular_text_t) {
-  	regularTextColor.argb = regular_text_t->value->uint8;
-  }
-
-  Tuple *bold_text_t = dict_find(iter, KEY_BOLD_TEXT);
-  if(bold_text_t) {
-  	boldTextColor.argb = bold_text_t->value->uint8;
-  }
-
 #endif
 
   refresh_time();
@@ -445,18 +450,35 @@ void handle_init() {
 	window = window_create();
 	window_stack_push(window, true);
 
-	if (persist_read_bool(KEY_INVERSE)) {
-		window_set_background_color(window, GColorWhite);	
-		regularTextColor.argb=GColorBlack.argb;
-		boldTextColor.argb=GColorBlack.argb;
-	} else {
-		window_set_background_color(window, GColorBlack);	
-		regularTextColor.argb=GColorWhite.argb;
-		boldTextColor.argb=GColorWhite.argb;
+	// Default colors
+	GColor8 backgroundColor;
+	backgroundColor.argb = GColorBlack.argb;
+	regularTextColor.argb=GColorWhite.argb;
+	boldTextColor.argb=GColorWhite.argb;
+
+#ifdef PBL_COLOR
+	if (persist_exists(KEY_BACKGROUND)) {
+		backgroundColor.argb = persist_read_int(KEY_BACKGROUND);
 	}
 
-	app_message_register_inbox_received(inbox_received_handler);
-  	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+	if (persist_exists(KEY_REGULAR_TEXT)) {
+		regularTextColor.argb = persist_read_int(KEY_REGULAR_TEXT);
+	}
+
+	if (persist_exists(KEY_BOLD_TEXT)) {
+		boldTextColor.argb = persist_read_int(KEY_BOLD_TEXT);
+	}
+
+#else
+	if (persist_read_bool(KEY_INVERSE)) {
+		backgroundColor.argb = GColorWhite.argb;
+		regularTextColor.argb=GColorBlack.argb;
+		boldTextColor.argb=GColorBlack.argb;
+	}
+#endif
+
+	// Set backgroun color
+	window_set_background_color(window, backgroundColor);
 
 	// Init and load lines
 	for (int i = 0; i < NUM_LINES; i++)
@@ -466,16 +488,15 @@ void handle_init() {
 		layer_add_child(window_get_root_layer(window), (Layer *)lines[i].nextLayer);
 	}
 
-	// Configure time on init
+	// Show greeting message
 	char greeting[32];
 	time_to_greeting(get_localtime()->tm_hour, greeting);
 #if DEBUG == 1
 	strcat(greeting, " Debug ");
 #endif
 	display_message(greeting, MESSAGE_DISPLAY_TIME);
-	//refresh_time();
 
-	// Subscribe to minute ticks
+	// Subscribe to ticks
 	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 
 	// Subscribe to bluetooth events
@@ -483,6 +504,9 @@ void handle_init() {
 	  .pebble_app_connection_handler = bt_handler
 	});
 
+	// Set up listener for configuration changes
+	app_message_register_inbox_received(inbox_received_handler);
+  	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 void destroy_line(Line* line)
