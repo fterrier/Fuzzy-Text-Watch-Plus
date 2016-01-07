@@ -40,11 +40,11 @@ Pebble.addEventListener('webviewclosed', function(e) {
 });
 
 function hexColorToARGB2222(color) {
-  if (color.length == 8) {
+  if (color.length == 8) { // Expect "0xRRGGBB"
     var r = parseInt(color.substring(2,3), 16) >> 2;
     var g = parseInt(color.substring(4,5), 16) >> 2;
     var b = parseInt(color.substring(6,7), 16) >> 2;
-    //console.log("background color: " + r + " " + g + " " + b);
+
     var col = 3;  //alpha
     col = (col << 2) + r;
     col = (col << 2) + g;
