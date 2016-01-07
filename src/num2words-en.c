@@ -181,3 +181,23 @@ void time_to_words(int hours, int minutes, char* words, size_t length) {
   }
 }
 
+void time_to_greeting(int hour, char* greeting)
+{
+  if (hour < 5 || hour >= 22) {
+    strcpy(greeting, "God natt ");
+  } else if (hour < 11) {
+#ifdef PBL_PLATFORM_CHALK
+    strcpy(greeting, "God morgon ");
+#else
+    strcpy(greeting, "God mor- gon ");
+#endif
+  } else if (hour < 17) {
+#ifdef PBL_PLATFORM_CHALK
+    strcpy(greeting, "God dag ");
+#else
+    strcpy(greeting, "God  dag ");
+#endif
+  } else {
+    strcpy(greeting, "God afton ");
+  }
+}

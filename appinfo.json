@@ -1,15 +1,35 @@
 {
-  "uuid": "7af39b73-cf0e-66ef-5b66-8028dfc4b4a2",
-  "shortName": "Fuzzy Text",
-  "longName": "Fuzzy Text Watch",
+  "uuid": "8cf39b73-cf0e-66ef-5b66-8028dfc4b4a2",
+  "shortName": "SE Fuzzy Text",
+  "longName": "SE Fuzzy Text",
   "companyName": "Mattias Backlund",
   "versionCode": 1,
-  "versionLabel": "2.0.0",
+  "versionLabel": "3.0",
   "watchapp": {
     "watchface": true
   },
-  "appKeys": {},
+  "capabilities": [
+    "configurable"
+  ],
+  "appKeys": {
+    "KEY_INVERSE": 0,
+    "KEY_BACKGROUND": 1,
+    "KEY_REGULAR_TEXT": 2,
+    "KEY_BOLD_TEXT": 3
+    },
   "resources": {
-    "media": []
-  }
+    "media": [
+    {
+      "menuIcon": true,
+      "type": "bitmap",
+      "name": "IMAGE_MENU_ICON",
+      "file": "icons/menu_icon.png"
+    }]
+  },
+  "targetPlatforms": [
+    "aplite",
+    "basalt",
+    "chalk"
+  ],
+  "sdkVersion": "3"
 }
