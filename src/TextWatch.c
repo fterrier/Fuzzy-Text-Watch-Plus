@@ -441,7 +441,7 @@ void bt_handler(bool connected) {
 		vibes_long_pulse();
 		light_enable_interaction();
 		char message[24];
-		strcpy(message, "Var är din telefon ");
+		strcpy(message, "Where is your phone? ");
 		display_message(message, MESSAGE_DISPLAY_TIME * 4);
 	}
 }
