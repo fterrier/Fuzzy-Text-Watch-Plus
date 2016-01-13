@@ -328,7 +328,7 @@ void display_time(struct tm *t, bool force)
 	currentNLines = nextNLines;
 }
 
-// Time handler called every minute by the system
+// Time handler called every second by the system
 void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 {
   bool resetMessage = false;

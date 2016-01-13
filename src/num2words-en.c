@@ -1,9 +1,8 @@
 #include "num2words-en.h"
 #include "string.h"
-//#include <stdio.h>
+#include <stdio.h>
 
-static const char* const ONES[] = {
-  "noll",
+const char* const HOURS_SE[] = {
   "ett",
   "två",
   "tre",
@@ -12,162 +11,93 @@ static const char* const ONES[] = {
   "sex",
   "sju",
   "åtta",
-  "nio"
-};
-
-static const char* const TEENS[] ={
-  "",
-  "elva",
-  "tolv",
-  "tretton",
-  "fjorton",
-  "femton",
-  "sexton",
-  "sjutton",
-  "arton",
-  "nitton"
-};
-
-static const char* const TENS[] = {
-  "",
+  "nio",
   "tio",
-  "tjugo",
-  "trettio",
-  "fyrtio",
-  "femtio",
-  "sextio",
-  "sjuttio",
-  "åttio",
-  "nittio"
+  "elva",
+  "tolv"
 };
 
-#define QUARTER "kvart"
-#define HALF "halv"
+const char* const PHRASES_SE[] = {
+  "klockan är *$1 ",
+  "fem över *$1 ",
+  "tio över *$1 ",
+  "kvart över *$1 ",
+  "tjugo över *$1 ",
+  "fem i halv *$2 ",
+  "halv *$2 ",
+  "fem över halv *$2 ",
+  "tjugo i *$2 ",
+  "kvart i *$2 ",
+  "tio i *$2 ",
+  "fem i *$2 "
+};
 
-#define PAST "över"
-#define TO "i"
+const char* const HOURS_EN[] = {
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve"
+};
 
-#define MAX_LEN 7
+const char* const PHRASES_EN[] = {
+  "*$1 o'clock ",
+  "five past *$1 ",
+  "ten past *$1 ",
+  "quarter past *$1 ",
+  "twenty past *$1 ",
+  "twenty five past *$1 ",
+  "half past *$1 ",
+  "twenty five to *$2 ",
+  "twenty to *$2 ",
+  "quarter to *$2 ",
+  "ten to *$2 ",
+  "five to *$2 "
+};
 
-static size_t append_number(char* words, int num) {
-  int tens_val = num / 10 % 10;
-  int ones_val = num % 10;
 
-  size_t len = 0;
-
-  if (tens_val > 0) {
-    if (tens_val == 1 && num != 10) {
-      strcat(words, TEENS[ones_val]);
-      return strlen(TEENS[ones_val]);
-    }
-    strcat(words, TENS[tens_val]);
-    len += strlen(TENS[tens_val]);
-  }
-
-  if (ones_val > 0 || num == 0) {
-    strcat(words, ONES[ones_val]);
-    len += strlen(ONES[ones_val]);
-  }
-
-  if (len > MAX_LEN)
-  {
-    int fullSize = strlen(words);
-    words[fullSize - (len - MAX_LEN)] = 0;
-    len = MAX_LEN;
-  }
-
-  return len;
+const char* getHourWord(int hour) {
+  return HOURS_SE[(hour - 1) % 12];
 }
 
-static size_t append_string(char* buffer, const size_t length, const char* str) {
-  strncat(buffer, str, length);
-
-  size_t written = strlen(str);
-  return (length > written) ? written : length;
+const char* getFiveMinutePhrase(int fiveMinutePeriod) {
+  return PHRASES_SE[fiveMinutePeriod % 12];
 }
-
 
 void time_to_words(int hours, int minutes, char* words, size_t length) {
 
-  size_t remaining = length;
   memset(words, 0, length);
 
   // Fuzzy time
-  minutes = (minutes + 3) / 5 * 5;
+  int fiveMinutePeriod = ((minutes + 3) / 5) % 12;
+  char phrase[length]; 
+  strcpy(phrase, getFiveMinutePhrase(fiveMinutePeriod));
+ 
+  char *variable = NULL;
+  const char *hour;
 
-  // Handle minute wrapping
-  if (minutes > 55)
-  {
-    minutes -= 60;
-    hours++;
+  if ((variable = strstr(phrase, "$1")) != NULL) {
+    hour = getHourWord(hours);
+  }
+  else if ((variable = strstr(phrase, "$2")) != NULL) {
+    hour = getHourWord(hours + 1);
   }
 
-  switch (minutes)
-  {
-    case 0:
-      break;
-    case 5:
-    case 10:
-    case 20:
-      remaining -= append_number(words, minutes);
-      remaining -= append_string(words, remaining, " ");
-      remaining -= append_string(words, remaining, PAST);
-      remaining -= append_string(words, remaining, " ");
-      break;
-    case 15:
-      remaining -= append_string(words, remaining, QUARTER);
-      remaining -= append_string(words, remaining, " ");
-      remaining -= append_string(words, remaining, PAST);
-      remaining -= append_string(words, remaining, " ");
-      break;
-    case 25:
-      remaining -= append_number(words, 5);
-      remaining -= append_string(words, remaining, " ");
-      remaining -= append_string(words, remaining, TO);
-      remaining -= append_string(words, remaining, " ");    
-      // Continues into case 30...
-    case 30:
-      remaining -= append_string(words, remaining, HALF);
-      remaining -= append_string(words, remaining, " ");
-      hours++;
-      break;
-    case 35:
-      remaining -= append_number(words, 5);
-      remaining -= append_string(words, remaining, " ");
-      remaining -= append_string(words, remaining, PAST);
-      remaining -= append_string(words, remaining, " ");    
-      remaining -= append_string(words, remaining, HALF);
-      remaining -= append_string(words, remaining, " ");
-      hours++;
-      break;
-    case 40:
-    case 50:
-    case 55:
-      remaining -= append_number(words, 60 - minutes);
-      remaining -= append_string(words, remaining, " ");
-      remaining -= append_string(words, remaining, TO);
-      remaining -= append_string(words, remaining, " ");
-      hours++;
-      break;
-    case 45:
-      remaining -= append_string(words, remaining, QUARTER);
-      remaining -= append_string(words, remaining, " ");
-      remaining -= append_string(words, remaining, TO);
-      remaining -= append_string(words, remaining, " ");
-      hours++;
-      break;
+  if (variable != NULL) {
+    *variable = '%';
+    *(variable + 1) = 's';
+    snprintf(words, length, phrase, hour);
+  } else {
+    strncpy(words, phrase, length);
   }
 
-  // Handle hour wrapping
-  hours += 12; // If hours == 0
-  while (hours > 12)
-  {
-    hours -= 12;
-  }
-
-  remaining -= append_string(words, remaining, "*"); // Make hours bold
-  remaining -= append_number(words, hours);
-  remaining -= append_string(words, remaining, " ");
 }
 
 void time_to_greeting(int hour, char* greeting)
