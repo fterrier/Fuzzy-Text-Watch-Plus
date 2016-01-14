@@ -6,7 +6,11 @@
 #include "lang-english.h"
 #include "lang-norwegian.h"
 
-static short language = LANG_NO;
+static uint8_t language = LANG_SE;
+
+void set_language(uint8_t lang) {
+  language = lang;
+}
 
 const char* getHourWord(int hour) {
   int pos = (hour - 1) % 12;

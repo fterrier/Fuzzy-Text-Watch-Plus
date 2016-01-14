@@ -3,10 +3,11 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html';
+  //var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?lang';
+  var url = 'file:///Users/mattias/gitroot/private/Swedish-Fuzzy-Text-watch/config/index.html?lang';
 
   if (getWatchVersion() < 3) { // Black n white
-    url = url + "?bw=1";
+    url = url + "&bw";
   }
 
   console.log('Showing configuration page: ' + url);
@@ -30,6 +31,9 @@ Pebble.addEventListener('webviewclosed', function(e) {
   // Bold text color
   argb = hexColorToARGB2222(configData['bold_color']);
   if (argb > 0) dict['KEY_BOLD_TEXT'] = argb;
+
+  var lang = configData['language'];
+  if (lang > 0) dict['KEY_LANGUAGE'] = parseInt(lang);
 
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {

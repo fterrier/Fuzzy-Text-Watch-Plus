@@ -12,6 +12,7 @@
 #define KEY_BACKGROUND 1
 #define KEY_REGULAR_TEXT 2
 #define KEY_BOLD_TEXT 3
+#define KEY_LANGUAGE 4
 
 #ifdef PBL_PLATFORM_CHALK
   // Pebble round screen resolution
@@ -384,6 +385,12 @@ void refresh_time() {
 }
 
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
+
+  Tuple *language_t = dict_find(iter, KEY_LANGUAGE);
+  if (language_t) {
+  	set_language(language_t->value->uint8);
+  	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Language is %d", language_t->value->uint8);
+  }
 
 #ifdef PBL_COLOR
 

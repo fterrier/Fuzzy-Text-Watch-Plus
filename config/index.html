@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-  <title>Slate Example Configuration</title>
+  <title>Fuzzy Text - Configuration</title>
   <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
   <script src='js/slate.min.js'></script>
   <style>
@@ -15,7 +15,7 @@
     text-align: center;
   }
 
-  .bw-config, .color-config {
+  .bw-config, .color-config, .language-config {
     display: none;
   }
 
@@ -24,6 +24,20 @@
 
   <body>
     <h1 class='title'>Fuzzy Text - Configuration</h1>
+
+    <div class='item-container language-config'>
+      <div class='item-container-header'>Language</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Select language
+          <select id='language_choice' class='item-select'>
+            <option value="1" selected>Svenska</option>
+            <option value="2">English</option>
+            <option value="3">Norsk</option>
+          </select>
+        </label>
+      </div>
+    </div>
 
     <div class='item-container bw-config'>
       <div class='item-container-header'>Screen color</div>
@@ -89,12 +103,14 @@
     var backgroundColorPicker = document.getElementById('background_color_picker');
     var regularColorPicker = document.getElementById('regular_color_picker');
     var boldColorPicker = document.getElementById('bold_color_picker');
+    var languageChoice = document.getElementById('language_choice');
  
     var options = {
       'inverse_colors': inverseColorCheckbox.checked,
       'background_color': backgroundColorPicker.value,
       'regular_color': regularColorPicker.value,
-      'bold_color': boldColorPicker.value
+      'bold_color': boldColorPicker.value,
+      'language': languageChoice.value
     };
 
     // Save for next launch
@@ -102,6 +118,7 @@
     localStorage['background_color'] = options['background_color'];
     localStorage['regular_color'] = options['regular_color'];
     localStorage['bold_color'] = options['bold_color'];
+    localStorage['language'] = options['language'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -133,22 +150,26 @@
     var backgroundColorPicker = document.getElementById('background_color_picker');
     var regularColorPicker = document.getElementById('regular_color_picker');
     var boldColorPicker = document.getElementById('bold_color_picker');
-
-    console.log(localStorage);
-
+    var languageChoice = document.getElementById('language_choice');
+    
     // Load any previously saved configuration, if available
     if(localStorage['inverse_colors']) inverseColorCheckbox.checked = JSON.parse(localStorage['inverse_colors']);
     if(localStorage['background_color']) backgroundColorPicker.value = localStorage['background_color'];
     if(localStorage['regular_color']) regularColorPicker.value = localStorage['regular_color'];
     if(localStorage['bold_color']) boldColorPicker.value = localStorage['bold_color'];
+    if(localStorage['language']) languageChoice.value = localStorage['language'];
 
 
-    var selected_configs;
+    var selected_configs = [];
 
     if (getQueryParam("bw")) {
-      selected_configs = document.getElementsByClassName("bw-config");
+      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("bw-config"));
     } else {
-      selected_configs = document.getElementsByClassName("color-config");
+      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("color-config"));
+    }
+
+    if (getQueryParam("lang")) {
+      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("language-config"));
     }
 
     for (var i = 0; i < selected_configs.length; i++) {
