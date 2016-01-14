@@ -32,3 +32,19 @@ const char* const PHRASES_NO[] = {
   "ti på *$2 ",
   "fem på *$2 "
 };
+
+#ifdef PBL_PLATFORM_CHALK
+  const char* const GREETINGS_NO[] = {
+    "God morgen ",
+    "God dag ",
+    "God kveld ",
+    "God natt "
+  };
+#else
+  const char* const GREETINGS_NO[] = {
+    "God mor- gen ",
+    "God  dag ",
+    "God kveld ",
+    "God natt "
+  };
+#endif

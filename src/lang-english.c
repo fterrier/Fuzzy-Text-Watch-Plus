@@ -29,3 +29,19 @@ const char* const PHRASES_EN[] = {
   "ten to *$2 ",
   "five to *$2 "
 };
+
+#ifdef PBL_PLATFORM_CHALK
+  const char* const GREETINGS_EN[] = {
+    "Good morning ",
+    "Good day ",
+    "Good evening ",
+    "Good night "
+  };
+#else
+  const char* const GREETINGS_EN[] = {
+    "Good mor- ning ",
+    "Good day ",
+    "Good even- ing ",
+    "Good night "
+  };
+#endif

@@ -12,30 +12,30 @@ const char* getHourWord(int hour) {
   int pos = (hour - 1) % 12;
 
   switch (language) {
-      case LANG_SE:
-    return HOURS_SE[pos];
+    case LANG_SE:
+      return HOURS_SE[pos];
 
-      case LANG_EN:
-    return HOURS_EN[pos];
+    case LANG_EN:
+      return HOURS_EN[pos];
 
-      case LANG_NO:
-    return HOURS_NO[pos];
- }
+    case LANG_NO:
+      return HOURS_NO[pos];
+  }
 
   return HOURS_SE[pos];
 }
 
 const char* getFiveMinutePhrase(int fiveMinutePeriod) {
   switch (language) {
-      case LANG_SE:
-    return PHRASES_SE[fiveMinutePeriod];
+    case LANG_SE:
+      return PHRASES_SE[fiveMinutePeriod];
 
-      case LANG_EN:
-    return PHRASES_EN[fiveMinutePeriod];
+    case LANG_EN:
+      return PHRASES_EN[fiveMinutePeriod];
 
-      case LANG_NO:
-    return PHRASES_NO[fiveMinutePeriod];
- }
+    case LANG_NO:
+      return PHRASES_NO[fiveMinutePeriod];
+  }
 
   return PHRASES_SE[fiveMinutePeriod];
 
@@ -72,21 +72,34 @@ void time_to_words(int hours, int minutes, char* words, size_t length) {
 
 void time_to_greeting(int hour, char* greeting)
 {
+  int pos;
+
   if (hour < 5 || hour >= 22) {
-    strcpy(greeting, "God natt ");
+    pos = 3; // night greeting
   } else if (hour < 11) {
-#ifdef PBL_PLATFORM_CHALK
-    strcpy(greeting, "God morgon ");
-#else
-    strcpy(greeting, "God mor- gon ");
-#endif
+    pos = 0; // morning greeting
   } else if (hour < 17) {
-#ifdef PBL_PLATFORM_CHALK
-    strcpy(greeting, "God dag ");
-#else
-    strcpy(greeting, "God  dag ");
-#endif
+    pos = 1; // day greeting
   } else {
-    strcpy(greeting, "God afton ");
+    pos = 2; // evening greeting
+  }
+
+  pos = 0;
+
+  switch (language) {
+    case LANG_SE:
+      strcpy(greeting, GREETINGS_SE[pos]);
+      break;
+
+    case LANG_EN:
+      strcpy(greeting, GREETINGS_EN[pos]);
+      break;
+    
+    case LANG_NO:
+      strcpy(greeting, GREETINGS_NO[pos]);
+      break;
+
+    default:
+      strcpy(greeting, GREETINGS_SE[pos]);
   }
 }

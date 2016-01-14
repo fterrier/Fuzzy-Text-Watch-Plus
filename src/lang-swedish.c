@@ -29,3 +29,19 @@ const char* const PHRASES_SE[] = {
   "tio i *$2 ",
   "fem i *$2 "
 };
+
+#ifdef PBL_PLATFORM_CHALK
+  const char* const GREETINGS_SE[] = {
+    "God morgon ",
+    "God dag ",
+    "God afton ",
+    "God natt "
+  };
+#else
+  const char* const GREETINGS_SE[] = {
+    "God mor- gon ",
+    "God  dag ",
+    "God afton ",
+    "God natt "
+  };
+#endif
