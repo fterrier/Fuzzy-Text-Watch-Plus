@@ -2,73 +2,43 @@
 #include "string.h"
 #include <stdio.h>
 
-const char* const HOURS_SE[] = {
-  "ett",
-  "två",
-  "tre",
-  "fyra",
-  "fem",
-  "sex",
-  "sju",
-  "åtta",
-  "nio",
-  "tio",
-  "elva",
-  "tolv"
-};
+#include "lang-swedish.h"
+#include "lang-english.h"
+#include "lang-norwegian.h"
 
-const char* const PHRASES_SE[] = {
-  "klockan är *$1 ",
-  "fem över *$1 ",
-  "tio över *$1 ",
-  "kvart över *$1 ",
-  "tjugo över *$1 ",
-  "fem i halv *$2 ",
-  "halv *$2 ",
-  "fem över halv *$2 ",
-  "tjugo i *$2 ",
-  "kvart i *$2 ",
-  "tio i *$2 ",
-  "fem i *$2 "
-};
-
-const char* const HOURS_EN[] = {
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine",
-  "ten",
-  "eleven",
-  "twelve"
-};
-
-const char* const PHRASES_EN[] = {
-  "*$1 o'clock ",
-  "five past *$1 ",
-  "ten past *$1 ",
-  "quarter past *$1 ",
-  "twenty past *$1 ",
-  "twenty five past *$1 ",
-  "half past *$1 ",
-  "twenty five to *$2 ",
-  "twenty to *$2 ",
-  "quarter to *$2 ",
-  "ten to *$2 ",
-  "five to *$2 "
-};
-
+static short language = LANG_NO;
 
 const char* getHourWord(int hour) {
-  return HOURS_SE[(hour - 1) % 12];
+  int pos = (hour - 1) % 12;
+
+  switch (language) {
+      case LANG_SE:
+    return HOURS_SE[pos];
+
+      case LANG_EN:
+    return HOURS_EN[pos];
+
+      case LANG_NO:
+    return HOURS_NO[pos];
+ }
+
+  return HOURS_SE[pos];
 }
 
 const char* getFiveMinutePhrase(int fiveMinutePeriod) {
-  return PHRASES_SE[fiveMinutePeriod % 12];
+  switch (language) {
+      case LANG_SE:
+    return PHRASES_SE[fiveMinutePeriod];
+
+      case LANG_EN:
+    return PHRASES_EN[fiveMinutePeriod];
+
+      case LANG_NO:
+    return PHRASES_NO[fiveMinutePeriod];
+ }
+
+  return PHRASES_SE[fiveMinutePeriod];
+
 }
 
 void time_to_words(int hours, int minutes, char* words, size_t length) {
