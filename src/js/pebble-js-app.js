@@ -3,8 +3,8 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  //var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?lang';
-  var url = 'file:///Users/mattias/gitroot/private/Swedish-Fuzzy-Text-watch/config/index.html?lang';
+  var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?lang';
+  //var url = 'file:///Users/mattias/gitroot/private/Swedish-Fuzzy-Text-watch/config/index.html?lang';
 
   if (getWatchVersion() < 3) { // Black n white
     url = url + "&bw";
