@@ -13,7 +13,7 @@ void set_language(uint8_t lang) {
 }
 
 const char* getHourWord(int hour) {
-  int pos = (hour - 1) % 12;
+  int pos = (hour + 11) % 12; // + 11 instead of - 1 to avoid negative result
 
   switch (language) {
     case LANG_SE:
@@ -65,6 +65,7 @@ void time_to_words(int hours, int minutes, char* words, size_t length) {
   }
 
   if (variable != NULL) {
+    // Substitute '$x' with '%s'
     *variable = '%';
     *(variable + 1) = 's';
     snprintf(words, length, phrase, hour);
