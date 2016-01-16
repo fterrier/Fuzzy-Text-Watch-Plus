@@ -2,7 +2,7 @@
 #ifdef PBL_COLOR
   #include "gcolor_definitions.h" // Allows the use of color
 #endif
-#include "num2words-en.h"
+#include "num2words.h"
 
 // Make watch switch time every 5 seconds
 #define DEBUG 0

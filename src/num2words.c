@@ -1,4 +1,4 @@
-#include "num2words-en.h"
+#include "num2words.h"
 #include "string.h"
 #include <stdio.h>
 
