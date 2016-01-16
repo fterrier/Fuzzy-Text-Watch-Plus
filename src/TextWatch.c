@@ -301,10 +301,13 @@ void display_message(char *message, int displayTime)
 // Update screen based on new time
 void display_time(struct tm *t, bool force)
 {
-	if (resetMessageTime != 0) // Don't update time if a message is showing
-	{
+	if (resetMessageTime != 0) { // Don't update time if a message is showing
 		return;
 	}
+
+	time_t timestamp = mktime(t);
+	timestamp += 180; // Add three minutes
+	t = localtime(&timestamp);
 
 	// The current time text will be stored in the following strings
 	char textLine[NUM_LINES][BUFFER_SIZE];
@@ -389,6 +392,7 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *language_t = dict_find(iter, KEY_LANGUAGE);
   if (language_t) {
   	set_language(language_t->value->uint8);
+  	persist_write_int(KEY_LANGUAGE, language_t->value->uint8);
   	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Language is %d", language_t->value->uint8);
   }
 
@@ -400,7 +404,7 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
 
   	//APP_LOG(APP_LOG_LEVEL_DEBUG, "background color value: %d", (uint8_t)background_color_t->value->uint8);
   	bg_color.argb = background_color_t->value->uint8;
-  	window_set_background_color(window, bg_color);  
+  	window_set_background_color(window, bg_color);
   	persist_write_int(KEY_BACKGROUND, bg_color.argb);	
   }
 
@@ -453,15 +457,17 @@ void bt_handler(bool connected) {
 	}
 }
 
-void handle_init() {
-	window = window_create();
-	window_stack_push(window, true);
+void readPersistedState() {
+	if (persist_exists(KEY_LANGUAGE)) {
+		set_language(persist_read_int(KEY_LANGUAGE));
+	}
 
-	// Default colors
+	// Set default colors
 	GColor8 backgroundColor;
 	backgroundColor.argb = GColorBlack.argb;
 	regularTextColor.argb=GColorWhite.argb;
 	boldTextColor.argb=GColorWhite.argb;
+
 
 #ifdef PBL_COLOR
 	if (persist_exists(KEY_BACKGROUND)) {
@@ -475,7 +481,6 @@ void handle_init() {
 	if (persist_exists(KEY_BOLD_TEXT)) {
 		boldTextColor.argb = persist_read_int(KEY_BOLD_TEXT);
 	}
-
 #else
 	if (persist_read_bool(KEY_INVERSE)) {
 		backgroundColor.argb = GColorWhite.argb;
@@ -484,8 +489,15 @@ void handle_init() {
 	}
 #endif
 
-	// Set backgroun color
+	// Set background color
 	window_set_background_color(window, backgroundColor);
+}
+
+void handle_init() {
+	window = window_create();
+	window_stack_push(window, true);
+
+	readPersistedState();
 
 	// Init and load lines
 	for (int i = 0; i < NUM_LINES; i++)

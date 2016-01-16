@@ -50,7 +50,7 @@ void time_to_words(int hours, int minutes, char* words, size_t length) {
   memset(words, 0, length);
 
   // Fuzzy time
-  int fiveMinutePeriod = ((minutes + 3) / 5) % 12;
+  int fiveMinutePeriod = (minutes / 5) % 12;
   char phrase[length]; 
   strcpy(phrase, getFiveMinutePhrase(fiveMinutePeriod));
  
