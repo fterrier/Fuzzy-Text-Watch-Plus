@@ -21,7 +21,7 @@ Features
 
 ToDo
 ----
- - [ ] Configurable languages in one app
+ - [x] Configurable languages in one app
  - [ ] Optional bluetooth lost icon
  - [ ] Configurable time offset (when the watch switches time)
  - [ ] Configurable text alignment
