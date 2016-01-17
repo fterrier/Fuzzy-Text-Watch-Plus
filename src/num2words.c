@@ -6,7 +6,7 @@
 #include "lang-english.h"
 #include "lang-norwegian.h"
 
-static uint8_t language = LANG_SE;
+static uint8_t language = LANG_EN;
 
 void set_language(uint8_t lang) {
   language = lang;
@@ -26,7 +26,7 @@ const char* getHourWord(int hour) {
       return HOURS_NO[pos];
   }
 
-  return HOURS_SE[pos];
+  return HOURS_EN[pos];
 }
 
 const char* getFiveMinutePhrase(int fiveMinutePeriod) {
@@ -41,7 +41,7 @@ const char* getFiveMinutePhrase(int fiveMinutePeriod) {
       return PHRASES_NO[fiveMinutePeriod];
   }
 
-  return PHRASES_SE[fiveMinutePeriod];
+  return PHRASES_EN[fiveMinutePeriod];
 
 }
 
