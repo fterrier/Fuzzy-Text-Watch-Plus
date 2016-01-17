@@ -89,8 +89,6 @@ void time_to_greeting(int hour, char* greeting)
     pos = 2; // evening greeting
   }
 
-  pos = 0;
-
   switch (language) {
     case LANG_SE:
       strcpy(greeting, GREETINGS_SE[pos]);
