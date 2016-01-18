@@ -82,6 +82,10 @@ int lastMinute = -1;
 // Only set to non zero when a message is displaying.
 time_t resetMessageTime = 0;
 
+// Time in seconds since epoch when connection lost message will be displayed,
+// if connection is still lost... (attempt to reduce false notifications)
+time_t connectionLostTime = 0;
+
 // Animation handler
 void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
 {
@@ -348,18 +352,29 @@ void display_time(struct tm *t, bool force)
 	currentNLines = nextNLines;
 }
 
+void check_connection(time_t *now) {
+	if (connectionLostTime > 0 && connectionLostTime <= *now) {
+		if (!connection_service_peek_pebble_app_connection()) {
+			notify_bt_lost();
+		}
+		connectionLostTime = 0;
+	}
+}
+
 // Time handler called every second by the system
 void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
   // If resetMessageTime != 0, then display_time() will not update screen
   bool force = false;
+  time_t now;
+  time(&now);
   if (resetMessageTime != 0) {
-  	time_t now;
-  	time(&now);
   	if (now >= resetMessageTime) {
   		resetMessageTime = 0;
   		force = true;
   	}
   }
+
+  check_connection(&now);
 
   display_time(tick_time, force);
 }
@@ -468,13 +483,21 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   refresh_time();
 }
 
+void notify_bt_lost() {
+	vibes_long_pulse();
+	light_enable_interaction();
+	char message[24];
+	get_connection_lost_message(message);
+	display_message(message, MESSAGE_DISPLAY_TIME * 4);	
+}
+
 void bt_handler(bool connected) {
-	if (!connected) {
-		vibes_long_pulse();
-		light_enable_interaction();
-		char message[24];
-		get_connection_lost_message(message);
-		display_message(message, MESSAGE_DISPLAY_TIME * 4);
+	if (connected) {
+		connectionLostTime = 0;
+	} else {
+		time_t now;
+		time(&now);
+		connectionLostTime = now + CONNECTION_LOST_MARGIN;
 	}
 }
 
