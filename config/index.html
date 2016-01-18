@@ -15,7 +15,7 @@
     text-align: center;
   }
 
-  .bw-config, .color-config, .language-config {
+  .bw-config, .color-config, .language-config, .offset-config {
     display: none;
   }
 
@@ -90,6 +90,31 @@
       </div>
     </div>
 
+    <div class='item-container offset-config'>
+      <div class='item-container-header'>Time offset</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Time offset, minutes
+          <select id='offset_choice' class='item-select'>
+            <option value="0">0:00</option>
+            <option value="60">1:00</option>
+            <option value="120">2:00</option>
+            <option value="150">2:30</option>
+            <option value="180" selected>3:00</option>
+            <option value="240">4:00</option>
+            <option value="300">5:00</option>
+          </select>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+      With five minute precision, this option decides how much ahead the watch will switch to the next
+      time entry.<p>
+      <i>Example:</i> If set to 0:00 the watch will switch to <b>nine o'clock</b> at <b>09:00</b> exactly. If set to 2:00,
+      it will switch to <b>nine o'clock</b> at <b>08:58</b>.
+      </div>
+    </div>
+
+
     <div class='item-container'>
       <div class='button-container'>
         <input id='submit_button' type='button' class='item-button' value='SUBMIT'>
@@ -104,13 +129,16 @@
     var regularColorPicker = document.getElementById('regular_color_picker');
     var boldColorPicker = document.getElementById('bold_color_picker');
     var languageChoice = document.getElementById('language_choice');
+    var offsetChoice = document.getElementById('offset_choice');
+
  
     var options = {
       'inverse_colors': inverseColorCheckbox.checked,
       'background_color': backgroundColorPicker.value,
       'regular_color': regularColorPicker.value,
       'bold_color': boldColorPicker.value,
-      'language': languageChoice.value
+      'language': languageChoice.value,
+      'offset': offsetChoice.value
     };
 
     // Save for next launch
@@ -119,6 +147,7 @@
     localStorage['regular_color'] = options['regular_color'];
     localStorage['bold_color'] = options['bold_color'];
     localStorage['language'] = options['language'];
+    localStorage['offset'] = options['offset'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -151,6 +180,7 @@
     var regularColorPicker = document.getElementById('regular_color_picker');
     var boldColorPicker = document.getElementById('bold_color_picker');
     var languageChoice = document.getElementById('language_choice');
+    var offsetChoice = document.getElementById('offset_choice');
     
     // Load any previously saved configuration, if available
     if(localStorage['inverse_colors']) inverseColorCheckbox.checked = JSON.parse(localStorage['inverse_colors']);
@@ -158,6 +188,7 @@
     if(localStorage['regular_color']) regularColorPicker.value = localStorage['regular_color'];
     if(localStorage['bold_color']) boldColorPicker.value = localStorage['bold_color'];
     if(localStorage['language']) languageChoice.value = localStorage['language'];
+    if(localStorage['offset']) offsetChoice.value = localStorage['offset'];
 
 
     var selected_configs = [];
@@ -170,6 +201,16 @@
 
     if (getQueryParam("lang")) {
       Array.prototype.push.apply(selected_configs, document.getElementsByClassName("language-config"));
+    }
+
+    var version = getQueryParam("v");
+    if (version > 0) {
+      if (version >= 33) {
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("language-config"));        
+      }
+      if (version >= 34) {
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("offset-config"));        
+      }
     }
 
     for (var i = 0; i < selected_configs.length; i++) {

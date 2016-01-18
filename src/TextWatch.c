@@ -13,6 +13,7 @@
 #define KEY_REGULAR_TEXT 2
 #define KEY_BOLD_TEXT 3
 #define KEY_LANGUAGE 4
+#define KEY_OFFSET 5
 
 #ifdef PBL_PLATFORM_CHALK
   // Pebble round screen resolution
@@ -68,6 +69,10 @@ int currentNLines;
 GColor8 regularTextColor;
 // Corrent color of bold text
 GColor8 boldTextColor;
+
+int timeOffset;
+
+int lastMinute = -1;
 
 // Time in seconds since epoch when a displayed message should be removed.
 // Only set to non zero when a message is displaying.
@@ -306,8 +311,15 @@ void display_time(struct tm *t, bool force)
 	}
 
 	time_t timestamp = mktime(t);
-	timestamp += 180; // Add three minutes
+	timestamp += timeOffset; // Add offset time
 	t = localtime(&timestamp);
+
+	if (lastMinute == t->tm_min) { // No change in time
+		return;
+	}
+
+	// Mark this minute as checked;
+	lastMinute = t->tm_min;
 
 	// The current time text will be stored in the following strings
 	char textLine[NUM_LINES][BUFFER_SIZE];
@@ -333,30 +345,20 @@ void display_time(struct tm *t, bool force)
 }
 
 // Time handler called every second by the system
-void handle_tick(struct tm *tick_time, TimeUnits units_changed)
-{
-  bool resetMessage = false;
-  if (resetMessageTime != 0)
-  {
+void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
+  // If resetMessageTime != 0, then display_time() will not update screen
+  if (resetMessageTime != 0) {
   	time_t now;
   	time(&now);
-  	if (now >= resetMessageTime)
-  	{
-  		resetMessage = true;
+  	if (now >= resetMessageTime) {
   		resetMessageTime = 0;
   	}
   }
 
-  if (resetMessage || 
-  	  (units_changed & MINUTE_UNIT) != 0 ||
-  	  DEBUG)
-  {
-	display_time(tick_time, false);
-  }
+  display_time(tick_time, false);
 }
 
-void init_line(Line* line)
-{
+void init_line(Line* line) {
 	// Create layers with dummy position to the right of the screen
 	line->currentLayer = text_layer_create(GRect(XRES, 0, XRES, 50));
 	line->nextLayer = text_layer_create(GRect(XRES, 0, XRES, 50));
@@ -387,33 +389,47 @@ void refresh_time() {
 	display_time(get_localtime(), true);
 }
 
+void set_offset(int offset) {
+	timeOffset = offset;
+}
+
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
 
+  // Language
   Tuple *language_t = dict_find(iter, KEY_LANGUAGE);
   if (language_t) {
   	set_language(language_t->value->uint8);
   	persist_write_int(KEY_LANGUAGE, language_t->value->uint8);
-  	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Language is %d", language_t->value->uint8);
+  }
+
+  // Time offset
+  Tuple *offset_t = dict_find(iter, KEY_OFFSET);
+  if (offset_t) {
+  	set_offset(offset_t->value->uint16);
+  	persist_write_int(KEY_LANGUAGE, offset_t->value->uint16);
+  	APP_LOG(APP_LOG_LEVEL_DEBUG, "Offset is %d", offset_t->value->uint16);
+
   }
 
 #ifdef PBL_COLOR
-
+  // Background color
   Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND);
   if(background_color_t) {
   	GColor8 bg_color;
 
-  	//APP_LOG(APP_LOG_LEVEL_DEBUG, "background color value: %d", (uint8_t)background_color_t->value->uint8);
   	bg_color.argb = background_color_t->value->uint8;
   	window_set_background_color(window, bg_color);
   	persist_write_int(KEY_BACKGROUND, bg_color.argb);	
   }
 
+  // Regular text color
   Tuple *regular_text_t = dict_find(iter, KEY_REGULAR_TEXT);
   if(regular_text_t) {
   	regularTextColor.argb = regular_text_t->value->uint8;
   	persist_write_int(KEY_REGULAR_TEXT, regularTextColor.argb);
   }
 
+  // Bold text color
   Tuple *bold_text_t = dict_find(iter, KEY_BOLD_TEXT);
   if(bold_text_t) {
   	boldTextColor.argb = bold_text_t->value->uint8;
@@ -421,8 +437,7 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   }
 
 #else
-
-  // Inverse colors?
+  // Inverse colors
   Tuple *color_inverse_t = dict_find(iter, KEY_INVERSE);
   if(color_inverse_t) {
   	if (color_inverse_t->value->int8 > 0) {  // Read boolean as an integer
@@ -460,6 +475,10 @@ void bt_handler(bool connected) {
 void readPersistedState() {
 	if (persist_exists(KEY_LANGUAGE)) {
 		set_language(persist_read_int(KEY_LANGUAGE));
+	}
+
+	if (persist_exists(KEY_OFFSET)) {
+		set_language(persist_read_int(KEY_OFFSET));
 	}
 
 	// Set default colors
