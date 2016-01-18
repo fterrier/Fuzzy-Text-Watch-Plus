@@ -70,8 +70,12 @@ GColor8 regularTextColor;
 // Corrent color of bold text
 GColor8 boldTextColor;
 
+// Time in seconds to add to the current time before calculating which
+// 5-minute period we should display
 int timeOffset;
 
+// Variale to keep track of the last minute that we updated the time
+// Used to optimise so we only need to run time logic once per minute.
 int lastMinute = -1;
 
 // Time in seconds since epoch when a displayed message should be removed.
@@ -314,7 +318,7 @@ void display_time(struct tm *t, bool force)
 	timestamp += timeOffset; // Add offset time
 	t = localtime(&timestamp);
 
-	if (lastMinute == t->tm_min) { // No change in time
+	if (lastMinute == t->tm_min && !force) { // No change in time
 		return;
 	}
 
@@ -347,15 +351,17 @@ void display_time(struct tm *t, bool force)
 // Time handler called every second by the system
 void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
   // If resetMessageTime != 0, then display_time() will not update screen
+  bool force = false;
   if (resetMessageTime != 0) {
   	time_t now;
   	time(&now);
   	if (now >= resetMessageTime) {
   		resetMessageTime = 0;
+  		force = true;
   	}
   }
 
-  display_time(tick_time, false);
+  display_time(tick_time, force);
 }
 
 void init_line(Line* line) {
