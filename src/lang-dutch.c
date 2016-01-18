@@ -39,5 +39,5 @@ const Language LANG_DUTCH = {
 		"Goede- nacht "
 	},
 
-	.connection_lost = "Waar is je telefoon"
+	.connection_lost = "Waar is je tele- foon "
 };
