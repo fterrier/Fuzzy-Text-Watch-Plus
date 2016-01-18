@@ -6,43 +6,34 @@
 #include "lang-english.h"
 #include "lang-norwegian.h"
 
-static uint8_t language = LANG_EN;
+static const Language* language = &LANG_SWEDISH;
 
 void set_language(uint8_t lang) {
-  language = lang;
+  switch (lang) {
+    case LANG_EN:
+      language = &LANG_ENGLISH;
+      break;
+
+    case LANG_SE:
+      language = &LANG_SWEDISH;
+      break;
+
+    case LANG_NO:
+      language = &LANG_NORWEGIAN;
+      break;
+
+    default:
+      language = &LANG_ENGLISH;
+  }
 }
 
 const char* getHourWord(int hour) {
   int pos = (hour + 11) % 12; // + 11 instead of - 1 to avoid negative result
-
-  switch (language) {
-    case LANG_SE:
-      return HOURS_SE[pos];
-
-    case LANG_EN:
-      return HOURS_EN[pos];
-
-    case LANG_NO:
-      return HOURS_NO[pos];
-  }
-
-  return HOURS_EN[pos];
+  return language->hours[pos];
 }
 
 const char* getFiveMinutePhrase(int fiveMinutePeriod) {
-  switch (language) {
-    case LANG_SE:
-      return PHRASES_SE[fiveMinutePeriod];
-
-    case LANG_EN:
-      return PHRASES_EN[fiveMinutePeriod];
-
-    case LANG_NO:
-      return PHRASES_NO[fiveMinutePeriod];
-  }
-
-  return PHRASES_EN[fiveMinutePeriod];
-
+  return language->phrases[fiveMinutePeriod];
 }
 
 void time_to_words(int hours, int minutes, char* words, size_t length) {
@@ -89,40 +80,10 @@ void time_to_greeting(int hour, char* greeting)
     pos = 2; // evening greeting
   }
 
-  switch (language) {
-    case LANG_SE:
-      strcpy(greeting, GREETINGS_SE[pos]);
-      break;
-
-    case LANG_EN:
-      strcpy(greeting, GREETINGS_EN[pos]);
-      break;
-    
-    case LANG_NO:
-      strcpy(greeting, GREETINGS_NO[pos]);
-      break;
-
-    default:
-      strcpy(greeting, GREETINGS_EN[pos]);
-  }
+  strcpy(greeting, language->greetings[pos]);
 }
 
 void get_connection_lost_message(char* message)
 {
-  switch (language) {
-    case LANG_SE:
-      strcpy(message, CONNECTION_LOST_SE);
-      break;
-
-    case LANG_EN:
-      strcpy(message, CONNECTION_LOST_EN);
-      break;
-
-    case LANG_NO:
-      strcpy(message, CONNECTION_LOST_NO);
-      break;
-
-    default:
-      strcpy(message, CONNECTION_LOST_EN);
-  }
+  strcpy(message, language->connection_lost);
 }

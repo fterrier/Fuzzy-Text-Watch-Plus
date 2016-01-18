@@ -1,7 +1,9 @@
-// Norska, bokmål
-#include "lang-norwegian.h"
+#include "num2words.h"
 
-const char* const HOURS_NO[] = {
+// Norska, bokmål
+const Language LANG_NORWEGIAN = {
+
+.hours = {
   "ett",
   "to",
   "tre",
@@ -14,9 +16,9 @@ const char* const HOURS_NO[] = {
   "ti",
   "elleve",
   "tolv"
-};
+},
 
-const char* const PHRASES_NO[] = {
+.phrases = {
   "*$1 ",
   "fem over *$1 ",
   "ti over *$1 ",
@@ -29,22 +31,23 @@ const char* const PHRASES_NO[] = {
   "kvart på *$2 ",
   "ti på *$2 ",
   "fem på *$2 "
-};
+},
 
 #ifdef PBL_PLATFORM_CHALK
-  const char* const GREETINGS_NO[] = {
+  .greetings = {
     "God morgen ",
     "God dag ",
     "God kveld ",
     "God natt "
-  };
+  },
 #else
-  const char* const GREETINGS_NO[] = {
+  .greetings = {
     "God mor- gen ",
     "God  dag ",
     "God kveld ",
     "God natt "
-  };
+  },
 #endif
 
-const char* const CONNECTION_LOST_NO = "Hvor er tele- fonen din? ";
+.connection_lost = "Hvor er tele- fonen din? "
+};

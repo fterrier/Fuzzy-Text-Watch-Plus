@@ -1,49 +1,51 @@
-#include "lang-english.h"
+#include "num2words.h"
 
-const char* const HOURS_EN[] = {
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine",
-  "ten",
-  "eleven",
-  "twelve"
-};
+const Language LANG_ENGLISH = {
+  .hours = {
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve"
+  },
 
-const char* const PHRASES_EN[] = {
-  "*$1 o'clock ",
-  "five past *$1 ",
-  "ten past *$1 ",
-  "quarter past *$1 ",
-  "twenty past *$1 ",
-  "twenty five past *$1 ",
-  "half past *$1 ",
-  "twenty five to *$2 ",
-  "twenty to *$2 ",
-  "quarter to *$2 ",
-  "ten to *$2 ",
-  "five to *$2 "
-};
+  .phrases = {
+    "*$1 o'clock ",
+    "five past *$1 ",
+    "ten past *$1 ",
+    "quarter past *$1 ",
+    "twenty past *$1 ",
+    "twenty five past *$1 ",
+    "half past *$1 ",
+    "twenty five to *$2 ",
+    "twenty to *$2 ",
+    "quarter to *$2 ",
+    "ten to *$2 ",
+    "five to *$2 "
+  },
 
 #ifdef PBL_PLATFORM_CHALK
-  const char* const GREETINGS_EN[] = {
+  .greetings = {
     "Good morning ",
     "Good day ",
     "Good evening ",
     "Good night "
-  };
+  },
 #else
-  const char* const GREETINGS_EN[] = {
+  .greetings = {
     "Good mor- ning ",
     "Good day ",
     "Good even- ing ",
     "Good night "
-  };
+  },
 #endif
 
-const char* const CONNECTION_LOST_EN = "Where is your phone? ";
+  .connection_lost = "Where is your phone? "
+};
