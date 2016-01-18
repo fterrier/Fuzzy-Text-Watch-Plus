@@ -37,3 +37,5 @@ const char* const PHRASES_NL[] = {
     "Goede- avond ",
     "Goede- nacht "
   };
+
+const char* const CONNECTION_LOST_NL = "Waar is je telefoon";
