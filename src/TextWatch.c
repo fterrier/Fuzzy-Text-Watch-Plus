@@ -406,7 +406,7 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *offset_t = dict_find(iter, KEY_OFFSET);
   if (offset_t) {
   	set_offset(offset_t->value->uint16);
-  	persist_write_int(KEY_LANGUAGE, offset_t->value->uint16);
+  	persist_write_int(KEY_OFFSET, offset_t->value->uint16);
   	APP_LOG(APP_LOG_LEVEL_DEBUG, "Offset is %d", offset_t->value->uint16);
 
   }
@@ -478,7 +478,7 @@ void readPersistedState() {
 	}
 
 	if (persist_exists(KEY_OFFSET)) {
-		set_language(persist_read_int(KEY_OFFSET));
+		set_offset(persist_read_int(KEY_OFFSET));
 	}
 
 	// Set default colors
