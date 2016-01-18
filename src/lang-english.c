@@ -45,3 +45,5 @@ const char* const PHRASES_EN[] = {
     "Good night "
   };
 #endif
+
+const char* const CONNECTION_LOST_EN = "Where is your phone? ";

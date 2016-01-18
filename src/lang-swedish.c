@@ -45,3 +45,5 @@ const char* const PHRASES_SE[] = {
     "God natt "
   };
 #endif
+
+const char* const CONNECTION_LOST_SE = "Var är din telefon ";

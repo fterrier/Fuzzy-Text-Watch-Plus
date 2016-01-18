@@ -16,8 +16,6 @@ const char* const HOURS_NO[] = {
   "tolv"
 };
 
-
-
 const char* const PHRASES_NO[] = {
   "*$1 ",
   "fem over *$1 ",
@@ -48,3 +46,5 @@ const char* const PHRASES_NO[] = {
     "God natt "
   };
 #endif
+
+const char* const CONNECTION_LOST_NO = "Hvor er tele- fonen din? ";

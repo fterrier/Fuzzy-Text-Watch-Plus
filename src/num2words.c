@@ -103,6 +103,26 @@ void time_to_greeting(int hour, char* greeting)
       break;
 
     default:
-      strcpy(greeting, GREETINGS_SE[pos]);
+      strcpy(greeting, GREETINGS_EN[pos]);
+  }
+}
+
+void get_connection_lost_message(char* message)
+{
+  switch (language) {
+    case LANG_SE:
+      strcpy(message, CONNECTION_LOST_SE);
+      break;
+
+    case LANG_EN:
+      strcpy(message, CONNECTION_LOST_EN);
+      break;
+
+    case LANG_NO:
+      strcpy(message, CONNECTION_LOST_NO);
+      break;
+
+    default:
+      strcpy(message, CONNECTION_LOST_EN);
   }
 }

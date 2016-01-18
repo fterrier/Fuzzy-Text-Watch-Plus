@@ -452,7 +452,7 @@ void bt_handler(bool connected) {
 		vibes_long_pulse();
 		light_enable_interaction();
 		char message[24];
-		strcpy(message, "Var är din telefon ");
+		get_connection_lost_message(message);
 		display_message(message, MESSAGE_DISPLAY_TIME * 4);
 	}
 }
