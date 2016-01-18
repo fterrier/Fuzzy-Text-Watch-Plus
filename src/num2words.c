@@ -5,6 +5,7 @@
 #include "lang-swedish.h"
 #include "lang-english.h"
 #include "lang-norwegian.h"
+#include "lang-dutch.h"
 
 static uint8_t language = LANG_EN;
 
@@ -24,6 +25,9 @@ const char* getHourWord(int hour) {
 
     case LANG_NO:
       return HOURS_NO[pos];
+
+    case LANG_NL:
+      return HOURS_NL[pos];
   }
 
   return HOURS_EN[pos];
@@ -39,6 +43,9 @@ const char* getFiveMinutePhrase(int fiveMinutePeriod) {
 
     case LANG_NO:
       return PHRASES_NO[fiveMinutePeriod];
+
+    case LANG_NL:
+      return PHRASES_NL[fiveMinutePeriod];
   }
 
   return PHRASES_EN[fiveMinutePeriod];
@@ -100,6 +107,10 @@ void time_to_greeting(int hour, char* greeting)
     
     case LANG_NO:
       strcpy(greeting, GREETINGS_NO[pos]);
+      break;
+
+    case LANG_NL:
+      strcpy(greeting, GREETINGS_NL[pos]);
       break;
 
     default:
