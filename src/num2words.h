@@ -7,8 +7,17 @@
 #define LANG_NO 3
 #define LANG_NL 4
 
+typedef struct {
+	const char* const hours[12];
+	const char* const phrases[12];
+	const char* const greetings[4];
+	const char* const connection_lost;
+} Language;
+
 void time_to_words(int hours, int minutes, char* words, size_t length);
 
 void time_to_greeting(int hour, char* greeting);
 
 void set_language(uint8_t language);
+
+void get_connection_lost_message(char* message);
