@@ -2,63 +2,11 @@
 #ifdef PBL_COLOR
   #include "gcolor_definitions.h" // Allows the use of color
 #endif
+
 #include "num2words.h"
-
-// Make watch switch time every 5 seconds
-#define DEBUG 0
-
-// Data keys
-#define KEY_INVERSE 0
-#define KEY_BACKGROUND 1
-#define KEY_REGULAR_TEXT 2
-#define KEY_BOLD_TEXT 3
-#define KEY_LANGUAGE 4
-#define KEY_OFFSET 5
-
-#ifdef PBL_PLATFORM_CHALK
-  // Pebble round screen resolution
-  #define XRES 180
-  #define YRES 180
-#else
-  // Pebble square screen resolution ;)
-  #define XRES 144
-  #define YRES 168
-#endif
-
-#define NUM_LINES 4
-#define LINE_LENGTH 7
-#define BUFFER_SIZE (LINE_LENGTH + 2)
-#define ROW_HEIGHT 37
-#define TOP_MARGIN 10
-
-// Text alignment. Can be GTextAlignmentLeft, GTextAlignmentCenter or GTextAlignmentRight
-#define TEXT_ALIGN GTextAlignmentCenter
-
-// The time it takes for a layer to slide in or out.
-#define ANIMATION_DURATION 400
-// Delay between the layers animations, from top to bottom
-#define ANIMATION_STAGGER_TIME 150
-// Delay from the start of the current layer going out until the next layer slides in
-#define ANIMATION_OUT_IN_DELAY 100
-
-
-#define LINE_APPEND_MARGIN 2
-// We can add a new word to a line if it is no longer than this
-#define LINE_APPEND_LIMIT (LINE_LENGTH - LINE_APPEND_MARGIN + 1)
-
-// How long to show messages, in seconds
-#define MESSAGE_DISPLAY_TIME 3
+#include "TextWatch.h"
 
 Window *window;
-
-typedef struct {
-	TextLayer *currentLayer;
-	TextLayer *nextLayer;
-	char lineStr1[BUFFER_SIZE];
-	char lineStr2[BUFFER_SIZE];
-	PropertyAnimation *animation1;
-	PropertyAnimation *animation2;
-} Line;
 
 Line lines[NUM_LINES];
 
