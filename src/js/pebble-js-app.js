@@ -7,7 +7,7 @@ Pebble.addEventListener('ready', function() {
 
 Pebble.addEventListener('showConfiguration', function() {
   var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?v=' + version;
-  //url = 'file:///Users/mattias/gitroot/private/Swedish-Fuzzy-Text-watch/config/index.html?v=' + version;
+  //url = 'file:///Users/mattias/gitroot/private/Fuzzy-Text-watch-Plus/config/index.html?v=' + version;
 
   if (getWatchVersion() < 3) { // Black n white
     url = url + "&bw";

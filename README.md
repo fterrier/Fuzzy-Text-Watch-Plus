@@ -1,7 +1,7 @@
 Fuzzy Text watch Plus
 ========================
-
-This is a watch face for the **Pebble smartwatch**. It is based on the PebbleTextWatch by waerewip (https://github.com/wearewip/PebbleTextWatch)
+This is a watch face for the [Pebble smartwatch](http://www.getpebble.com). It is based on the
+[PebbleTextWatch](https://github.com/wearewip/PebbleTextWatch) by waerewip
 
 I wanted to combine the elegant layout and animations of the TextWatch with the natural language of
 the Fuzzy Time watchface and I wanted it in my native language, Swedish.
@@ -16,7 +16,7 @@ Features
  - Buzz and message when bluetooth connection is lost
  - Configurable colors
  - Supports all pebble models up to and including Pebble Time Round
- - Configurable time offset for shown the five minute period
+ - Configurable time offset for the shown five minute period
  - Nice staggered animation
  - Between one and four lines of text, depending on need.
  - The text rows are always centered vertically
@@ -32,14 +32,11 @@ ToDo
 
 Preview
 -------
-A demo video of the left justified version is available here:
+A demo video of an old left justified version is available here:
 https://www.youtube.com/watch?v=ccubUg9Hp5Y
 
 
 Download / Install
-------
-This watchface is available on the Pebble App store in a Swedish and an English version as:
-
- - Fuzzy Text Swedish
- - Fuzzy Text Watch _(English)_
+------------------
+This watchface is available on the Pebble App store as [Fuzzy Text Plus](https://apps.getpebble.com/en_US/application/52de476d6094ff6bf0000046).
 
