@@ -270,9 +270,11 @@ void display_time(struct tm *t, bool force)
 	timestamp += timeOffset; // Add offset time
 	t = localtime(&timestamp);
 
+#if DEBUG == 0
 	if (lastMinute == t->tm_min && !force) { // No change in time
 		return;
 	}
+#endif
 
 	// Mark this minute as checked;
 	lastMinute = t->tm_min;
