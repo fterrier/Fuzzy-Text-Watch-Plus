@@ -31,7 +31,9 @@
 // Size of text buffer for lines
 #define BUFFER_SIZE (LINE_LENGTH + 2)
 // Vertical distance in pixels between lines
-#define ROW_HEIGHT 37
+#define ROW_HEIGHT 50
+// Vertical distance in pixels between lines
+#define ROW_OFFSET 37
 // Pull top line up by this many pixels
 #define TOP_MARGIN 10
 
