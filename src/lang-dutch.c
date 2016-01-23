@@ -34,10 +34,10 @@ const Language LANG_DUTCH = {
 
 	.greetings = {
 		"Goede- morgen ",
-		"Goede- dag ",
+		"Goede- middag ",
 		"Goede- avond ",
 		"Goede- nacht "
 	},
 
-	.connection_lost = "Waar is je tele- foon "
+	.connection_lost = "Waar  is je tele- foon? "
 };
