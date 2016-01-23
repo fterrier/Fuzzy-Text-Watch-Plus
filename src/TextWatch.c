@@ -163,13 +163,13 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 	numLines = i;
 
 	// Calculate y position of top Line
-	int ypos = (YRES - numLines * ROW_HEIGHT) / 2 - TOP_MARGIN;
+	int ypos = (YRES - numLines * ROW_OFFSET) / 2 - TOP_MARGIN;
 
 	// Set y positions for the lines
 	for (int i = 0; i < numLines; i++)
 	{
-		layer_set_frame((Layer *)lines[i].nextLayer, GRect(XRES, ypos, XRES, 50));
-		ypos += ROW_HEIGHT;
+		layer_set_frame((Layer *)lines[i].nextLayer, GRect(XRES, ypos, XRES, ROW_HEIGHT));
+		ypos += ROW_OFFSET;
 	}
 
 	return numLines;
@@ -329,8 +329,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 
 void init_line(Line* line) {
 	// Create layers with dummy position to the right of the screen
-	line->currentLayer = text_layer_create(GRect(XRES, 0, XRES, 50));
-	line->nextLayer = text_layer_create(GRect(XRES, 0, XRES, 50));
+	line->currentLayer = text_layer_create(GRect(XRES, 0, XRES, ROW_HEIGHT));
+	line->nextLayer = text_layer_create(GRect(XRES, 0, XRES, ROW_HEIGHT));
 
 	// Configure a style
 	configureLightLayer(line->currentLayer);
@@ -377,7 +377,6 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   	set_offset(offset_t->value->uint16);
   	persist_write_int(KEY_OFFSET, offset_t->value->uint16);
   	APP_LOG(APP_LOG_LEVEL_DEBUG, "Offset is %d", offset_t->value->uint16);
-
   }
 
 #ifdef PBL_COLOR
