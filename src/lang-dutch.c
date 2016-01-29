@@ -32,12 +32,20 @@ const Language LANG_DUTCH = {
 		"vijf voor *$2 "
 	},
 
+#ifdef PBL_PLATFORM_CHALK
 	.greetings = {
 		"Goede- morgen ",
 		"Goede- middag ",
 		"Goede- avond ",
 		"Goede- nacht "
 	},
-
+#else
+	.greetings = {
+		"Goede- mor- gen ",
+		"Goede- middag ",
+		"Goede- avond ",
+		"Goede- nacht "
+	},
+#endif
 	.connection_lost = "Waar  is je tele- foon? "
 };
