@@ -1,5 +1,5 @@
 // Watchface version * 10 (3.4 becomes 34)
-var version=34;
+var version=35;
 
 Pebble.addEventListener('ready', function() {
   console.log('PebbleKit JS ready!');
