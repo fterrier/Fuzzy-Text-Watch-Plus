@@ -527,7 +527,10 @@ void handle_init() {
 
 	// Set up listener for configuration changes
 	app_message_register_inbox_received(inbox_received_handler);
-  	app_message_open(512, 512);
+  	AppMessageResult result = app_message_open(512, 512);
+  	if (result != APP_MSG_OK) {
+  		APP_LOG(APP_LOG_LEVEL_WARNING, "app_message_open() failed with error %d", result);
+  	}
 }
 
 void destroy_line(Line* line)
