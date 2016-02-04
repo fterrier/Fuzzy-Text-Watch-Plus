@@ -527,7 +527,7 @@ void handle_init() {
 
 	// Set up listener for configuration changes
 	app_message_register_inbox_received(inbox_received_handler);
-  	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  	app_message_open(512, 512);
 }
 
 void destroy_line(Line* line)
