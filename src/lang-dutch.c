@@ -34,17 +34,17 @@ const Language LANG_DUTCH = {
 
 #ifdef PBL_PLATFORM_CHALK
 	.greetings = {
-		"Goede- morgen ",
-		"Goede- middag ",
-		"Goede- avond ",
-		"Goede- nacht "
+		"Goede morgen ",
+		"Goede middag ",
+		"Goede avond ",
+		"Goede nacht "
 	},
 #else
 	.greetings = {
-		"Goede- mor- gen ",
-		"Goede- middag ",
-		"Goede- avond ",
-		"Goede- nacht "
+		"Goede mor- gen ",
+		"Goede middag ",
+		"Goede avond ",
+		"Goede nacht "
 	},
 #endif
 	.connection_lost = "Waar  is je tele- foon? "
