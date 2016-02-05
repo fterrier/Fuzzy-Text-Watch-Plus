@@ -6,12 +6,12 @@ This is a watch face for the [Pebble smartwatch](http://www.getpebble.com). It i
 I wanted to combine the elegant layout and animations of the TextWatch with the natural language of
 the Fuzzy Time watchface and I wanted it in my native language, Swedish.
 
-I have since then added three more languages, English, Norwegian and Dutch.
+I have since then added more languages, colors, connection lost notifications and more...
 
 Features
 --------
  - Fuzzy time in natural language with 5 minute precision.
- - Currently 4 languages are supported.
+ - Several languages are supported.
  - The large and easy to read fonts of the original Text Watch
  - Buzz and message when bluetooth connection is lost
  - Configurable colors
@@ -20,13 +20,15 @@ Features
  - Nice staggered animation
  - Between one and four lines of text, depending on need.
  - The text rows are always centered vertically
- - Smaller words may share a single line (such as "fem i")
+ - Smaller words may share a single line (such as "ten to")
  - Refactored code for better flexibility/rewriteability
 
-ToDo
+Possible future features
 ----
+ - [ ] More languages
  - [ ] Configurable text alignment
  - [ ] Optional bluetooth lost icon
+ - [ ] Shake to show date
  - [x] ~~Configurable time offset (when the watch switches time)~~
  - [x] ~~Configurable languages in one app~~
 
