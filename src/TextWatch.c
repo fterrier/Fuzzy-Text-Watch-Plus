@@ -130,6 +130,15 @@ void configureBoldLayer(TextLayer *textlayer)
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
 
+// Configure bold line of text
+void configureSmallBoldLayer(TextLayer *textlayer)
+{
+	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
+	text_layer_set_text_color(textlayer, boldTextColor);
+	text_layer_set_background_color(textlayer, GColorClear);
+	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
+}
+
 // Configure light line of text
 void configureLightLayer(TextLayer *textlayer)
 {
@@ -143,6 +152,8 @@ void configureLightLayer(TextLayer *textlayer)
 int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 {
 	int numLines = 0;
+	int height = 0;
+	int offsets[4];
 
 	// Set bold layer.
 	int i;
@@ -151,25 +162,37 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 			break;
 		}
 
-		if (format[i] == 'b')
+		offsets[i] = ROW_OFFSET;
+		if (format[i] == 'B') // Bold
 		{
 			configureBoldLayer(lines[i].nextLayer);
 		}
-		else
+		else if (format[i] == 'b') // Small bold
+		{
+			configureSmallBoldLayer(lines[i].nextLayer);
+			offsets[i] = ROW_OFFSET_SMALL;
+			// If there is a line above, increase its offset a bit 
+			if (i > 0) {
+				offsets[i - 1] += TOP_MARGIN_SMALL;
+				height += TOP_MARGIN_SMALL;
+			}
+		}
+		else // Normal line
 		{
 			configureLightLayer(lines[i].nextLayer);
 		}
+		height += offsets[i];
 	}
 	numLines = i;
 
 	// Calculate y position of top Line
-	int ypos = (YRES - numLines * ROW_OFFSET) / 2 - TOP_MARGIN;
+	int ypos = (YRES - height) / 2 - TOP_MARGIN;
 
 	// Set y positions for the lines
 	for (int i = 0; i < numLines; i++)
 	{
 		layer_set_frame((Layer *)lines[i].nextLayer, GRect(XRES, ypos, XRES, ROW_HEIGHT));
-		ypos += ROW_OFFSET;
+		ypos += offsets[i];
 	}
 
 	return numLines;
@@ -192,8 +215,12 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 		if (*start == '*' && end - start > 1)
 		{
 			// Mark line bold and move start to the first character of the word
-			format[l] = 'b';
+			format[l] = 'B';
 			start++;
+			if (*start == '<') { // small bold, actually
+				format[l] = 'b';
+				start++;
+			}
 		}
 		else
 		{

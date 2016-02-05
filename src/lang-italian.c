@@ -6,7 +6,11 @@ const Language LANG_ITALIAN = {
     "una",
     "due",
     "tre",
+#ifdef PBL_PLATFORM_CHALK
     "quattro",
+#else
+    "<quattro",
+#endif
     "cinque",
     "sei",
     "sette",
