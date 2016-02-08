@@ -7,6 +7,7 @@
 #define LANG_NO 3
 #define LANG_NL 4
 #define LANG_IT 5
+#define LANG_ES 6
 
 typedef struct {
 	const char* const hours[12];

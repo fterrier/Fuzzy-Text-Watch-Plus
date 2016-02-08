@@ -7,6 +7,7 @@
 #include "lang-norwegian.h"
 #include "lang-dutch.h"
 #include "lang-italian.h"
+#include "lang-spanish.h"
 
 static const Language* language = &LANG_SWEDISH;
 
@@ -30,6 +31,10 @@ void set_language(uint8_t lang) {
 
     case LANG_IT:
       language = &LANG_ITALIAN;
+      break;
+
+    case LANG_ES:
+      language = &LANG_SPANISH;
       break;
 
     default:
