@@ -466,7 +466,7 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
 void notify_bt_lost() {
 	vibes_long_pulse();
 	light_enable_interaction();
-	char message[24];
+	char message[48];
 	get_connection_lost_message(message);
 	display_message(message, MESSAGE_DISPLAY_TIME * 4);	
 }
@@ -536,7 +536,7 @@ void handle_init() {
 	}
 
 	// Show greeting message
-	char greeting[32];
+	char greeting[48];
 	time_to_greeting(get_localtime()->tm_hour, greeting);
 #if DEBUG == 1
 	time_to_greeting(get_localtime()->tm_sec * 24 / 60, greeting);
