@@ -554,7 +554,6 @@ void handle_init() {
 	time_to_greeting(get_localtime()->tm_hour, greeting);
 #if DEBUG == 1
 	time_to_greeting(get_localtime()->tm_sec * 24 / 60, greeting);
-	strcat(greeting, " Debug ");
 #endif
 	display_message(greeting, MESSAGE_DISPLAY_TIME);
 
