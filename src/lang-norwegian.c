@@ -3,51 +3,70 @@
 // Norska, bokmål
 const Language LANG_NORWEGIAN = {
 
-.hours = {
-  "ett",
-  "to",
-  "tre",
-  "fire",
-  "fem",
-  "seks",
-  "sju",
-  "åtte",
-  "ni",
-  "ti",
-  "elleve",
-  "tolv"
-},
-
-.phrases = {
-  "*$1 ",
-  "fem over *$1 ",
-  "ti over *$1 ",
-  "kvart over *$1 ",
-  "ti på halv *$2 ",
-  "fem på halv *$2 ",
-  "halv *$2 ",
-  "fem over halv *$2 ",
-  "ti over halv *$2 ",
-  "kvart på *$2 ",
-  "ti på *$2 ",
-  "fem på *$2 "
-},
+  .hours = {
+    "ett",
+    "to",
+    "tre",
+    "fire",
+    "fem",
+    "seks",
+    "sju",
+    "åtte",
+    "ni",
+    "ti",
+    "elleve",
+    "tolv"
+  },
 
 #ifdef PBL_PLATFORM_CHALK
+  .phrases = {
+    "*$1 ",
+    "fem over *$1 ",
+    "ti over *$1 ",
+    "kvart over *$1 ",
+    "ti på halv *$2 ",
+    "fem på halv *$2 ",
+    "halv *$2 ",
+    "fem  over halv *$2 ",
+    "ti over halv *$2 ",
+    "kvart på *$2 ",
+    "ti på *$2 ",
+    "fem på *$2 "
+  },
+
   .greetings = {
     "God morgen ",
     "God dag ",
-    "God kveld ",
+    "God  kveld ",
     "God natt "
   },
+
+  .connection_lost = "Hvor  er tele- fonen din? "
 #else
-  .greetings = {
-    "God mor- gen ",
-    "God  dag ",
-    "God kveld ",
-    "God natt "
+  .phrases = {
+    "*$1 ",
+    "fem  over *$1 ",
+    "ti over *$1 ",
+    "kvart over *$1 ",
+    "ti på halv *$2 ",
+    "fem på halv *$2 ",
+    "halv *$2 ",
+    "fem  over  halv *$2 ",
+    "ti over halv *$2 ",
+    "kvart  på *$2 ",
+    "ti på *$2 ",
+    "fem på *$2 "
   },
+
+  .greetings = {
+    "God  mor-  gen ",
+    "God  dag ",
+    "God  kveld ",
+    "God  natt "
+  },
+
+  .connection_lost = "Hvor er tele- fonen din? "
+
 #endif
 
-.connection_lost = "Hvor er tele- fonen din? "
 };

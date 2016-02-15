@@ -20,7 +20,7 @@
 #endif
 
 // Max number of characters in a line
-#define LINE_LENGTH 7
+#define LINE_LENGTH 9
 // How many characters must be available in a line to consider adding a second word
 #define LINE_APPEND_MARGIN 2
 // We can add a new word to a line if it is no longer than this

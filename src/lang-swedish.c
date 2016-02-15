@@ -16,6 +16,7 @@ const Language LANG_SWEDISH = {
     "tolv"
   },
 
+#ifdef PBL_PLATFORM_CHALK
   .phrases = {
     "klockan är *$1 ",
     "fem över *$1 ",
@@ -24,26 +25,40 @@ const Language LANG_SWEDISH = {
     "tjugo över *$1 ",
     "fem i halv *$2 ",
     "halv *$2 ",
-    "fem över halv *$2 ",
+    "fem  över halv *$2 ",
     "tjugo i *$2 ",
     "kvart i *$2 ",
     "tio i *$2 ",
     "fem i *$2 "
   },
 
-#ifdef PBL_PLATFORM_CHALK
   .greetings = {
     "God morgon ",
     "God dag ",
-    "God afton ",
+    "God  afton ",
     "God natt "
   },
 #else
+  .phrases = {
+    "klockan är *$1 ",
+    "fem  över *$1 ",
+    "tio över *$1 ",
+    "kvart över *$1 ",
+    "tjugo över *$1 ",
+    "fem i halv *$2 ",
+    "halv *$2 ",
+    "fem  över  halv *$2 ",
+    "tjugo i *$2 ",
+    "kvart i *$2 ",
+    "tio i *$2 ",
+    "fem i *$2 "
+  },
+
   .greetings = {
-    "God mor- gon ",
+    "God  mor-  gon ",
     "God  dag ",
-    "God afton ",
-    "God natt "
+    "God  afton ",
+    "God  natt "
   },
 #endif
 

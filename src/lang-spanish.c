@@ -17,6 +17,7 @@ const Language LANG_SPANISH = {
       "doce"
   },
 
+#ifdef PBL_PLATFORM_CHALK
   .phrases = {
       "*$1 en punto ",
       "*$1 y cinco ",
@@ -31,6 +32,22 @@ const Language LANG_SPANISH = {
       "*$2 menos diez ",
       "*$2 menos cinco "
   },
+#else
+  .phrases = {
+      "*$1 en  punto ",
+      "*$1 y cinco ",
+      "*$1 y diez ",
+      "*$1 y  cuarto ",
+      "*$1 y veinte ",
+      "*$1 y veinti- cinco ",
+      "*$1 y media ",
+      "*$2 menos veinti- cinco ",
+      "*$2 menos veinte ",
+      "*$2 menos cuarto ",
+      "*$2 menos diez ",
+      "*$2 menos cinco "
+  },
+#endif
 
   .greetings = {
     "Buenos días ",
@@ -39,6 +56,10 @@ const Language LANG_SPANISH = {
     "Buenas noches "
   },
 
+#ifdef PBL_PLATFORM_CHALK
   .connection_lost = "Dónde está tu teléfono "
+#else
+  .connection_lost = "Dónde está tu telé- fono "
+#endif
 
 };
