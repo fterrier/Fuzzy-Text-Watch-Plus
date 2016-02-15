@@ -34,6 +34,18 @@ time_t resetMessageTime = 0;
 // if connection is still lost... (attempt to reduce false notifications)
 time_t connectionLostTime = 0;
 
+
+int strlenUtf8(char *s) 
+{
+  int i = 0, j = 0;
+  while (s[i]) 
+  {
+    if ((s[i] & 0xc0) != 0x80) j++;
+    i++;
+  }
+  return j;
+}
+
 // Animation handler
 void animationStoppedHandler(struct Animation *animation, bool finished, void *context)
 {
