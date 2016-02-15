@@ -34,16 +34,17 @@ time_t resetMessageTime = 0;
 // if connection is still lost... (attempt to reduce false notifications)
 time_t connectionLostTime = 0;
 
-
-int strlenUtf8(char *s) 
+// UTF8 aware strlen() for a sequence of bytes
+int strlenUtf8(char *start, char *end) 
 {
-  int i = 0, j = 0;
-  while (s[i]) 
-  {
-    if ((s[i] & 0xc0) != 0x80) j++;
-    i++;
-  }
-  return j;
+	int span = end - start;
+	int i = 0, j = 0;
+	while (start[i] && i < span) 
+	{
+		if ((start[i] & 0xc0) != 0x80) j++;
+		i++;
+	}
+	return j;
 }
 
 // Animation handler
@@ -245,11 +246,12 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 		// Can we add another word to the line?
 		if (format[l] == ' ' && *nextWord != '*'  // are both lines formatted normal?
 			&& *nextWord != ' '                   // no no-join annotation (double space)
-			&& end - start < LINE_APPEND_LIMIT)  // is the first word short enough?
+			&& strlenUtf8(start, end) < LINE_APPEND_LIMIT)  // is the first word short enough?
 		{
 			// See if next word fits
 			char *try = strstr(end + 1, " ");
-			if (try != NULL && try - start <= LINE_LENGTH)
+			if (try != NULL
+				&& strlenUtf8(start, try) <= LINE_LENGTH)
 			{
 				end = try;
 			}
