@@ -34,6 +34,10 @@ time_t resetMessageTime = 0;
 // if connection is still lost... (attempt to reduce false notifications)
 time_t connectionLostTime = 0;
 
+// Time in seconds to diplay the greeting messages at startup. 0 means disable
+// greeting messages.
+int messageTime = 3;
+
 // UTF8 aware strlen() for a sequence of bytes
 int strlenUtf8(char *start, char *end) 
 {
@@ -280,24 +284,26 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 // Update screen based on new time
 void display_message(char *message, int displayTime)
 {
-	// The current time text will be stored in the following strings
-	char textLine[NUM_LINES][BUFFER_SIZE];
-	char format[NUM_LINES];
+	if (displayTime > 0) {
+		// The current time text will be stored in the following strings
+		char textLine[NUM_LINES][BUFFER_SIZE];
+		char format[NUM_LINES];
 
-	string_to_lines(message, textLine, format);
-	
-	int nextNLines = configureLayersForText(textLine, format);
+		string_to_lines(message, textLine, format);
+		
+		int nextNLines = configureLayersForText(textLine, format);
 
-	int delay = 0;
-	for (int i = 0; i < NUM_LINES; i++) {
-	    updateLineTo(&lines[i], textLine[i], delay);
-	    delay += ANIMATION_STAGGER_TIME;
+		int delay = 0;
+		for (int i = 0; i < NUM_LINES; i++) {
+		    updateLineTo(&lines[i], textLine[i], delay);
+		    delay += ANIMATION_STAGGER_TIME;
+		}
+		
+		currentNLines = nextNLines;
+
+		time(&resetMessageTime);
+		resetMessageTime += displayTime;
 	}
-	
-	currentNLines = nextNLines;
-
-	time(&resetMessageTime);
-	resetMessageTime += displayTime;
 }
 
 // Update screen based on new time
@@ -405,6 +411,10 @@ void set_offset(int offset) {
 	timeOffset = offset;
 }
 
+void set_message_time(int mTime) {
+	messageTime = mTime;
+}
+
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Received inbox message");
 
@@ -422,6 +432,14 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   	set_offset(offset_t->value->uint16);
   	persist_write_int(KEY_OFFSET, offset_t->value->uint16);
   	APP_LOG(APP_LOG_LEVEL_DEBUG, "Offset is %d", offset_t->value->uint16);
+  }
+
+  // Message time
+  Tuple *message_time_t = dict_find(iter, KEY_MESSAGE_TIME);
+  if (message_time_t) {
+  	set_message_time(message_time_t->value->uint8);
+  	persist_write_int(KEY_MESSAGE_TIME, message_time_t->value->uint8);
+  	APP_LOG(APP_LOG_LEVEL_DEBUG, "Message time is %d", message_time_t->value->uint8);
   }
 
 #ifdef PBL_COLOR
@@ -482,7 +500,7 @@ void notify_bt_lost() {
 	light_enable_interaction();
 	char message[48];
 	get_connection_lost_message(message);
-	display_message(message, MESSAGE_DISPLAY_TIME * 4);	
+	display_message(message, BT_LOST_DISPLAY_TIME);	
 }
 
 void bt_handler(bool connected) {
@@ -502,6 +520,10 @@ void readPersistedState() {
 
 	if (persist_exists(KEY_OFFSET)) {
 		set_offset(persist_read_int(KEY_OFFSET));
+	}
+
+	if (persist_exists(KEY_MESSAGE_TIME)) {
+		set_message_time(persist_read_int(KEY_MESSAGE_TIME));
 	}
 
 	// Set default colors
@@ -555,8 +577,11 @@ void handle_init() {
 #if DEBUG == 1
 	time_to_greeting(get_localtime()->tm_sec * 24 / 60, greeting);
 #endif
-	display_message(greeting, MESSAGE_DISPLAY_TIME);
-
+	if (messageTime > 0) {
+		display_message(greeting, messageTime);
+	} else {
+		refresh_time();
+	}
 	// Subscribe to ticks
 	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 

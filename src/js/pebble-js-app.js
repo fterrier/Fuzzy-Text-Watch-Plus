@@ -1,13 +1,13 @@
-// Watchface version * 10 (3.4 becomes 34)
-var version=39;
+// Watchface config version 
+var version=40;
 
 Pebble.addEventListener('ready', function() {
   console.log('PebbleKit JS ready!');
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?v=' + version;
-  //url = 'file:///Users/mattias/gitroot/private/Fuzzy-Text-watch-Plus/config/index.html?v=' + version;
+  //var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?v=' + version;
+  var url = 'file:///Users/mattias/gitroot/Fuzzy-Text-watch-Plus/config/index.html?v=' + version;
 
   if (getWatchVersion() < 3) { // Black n white
     url = url + "&bw";
@@ -42,6 +42,9 @@ Pebble.addEventListener('webviewclosed', function(e) {
   // Time offset
   var offset = configData['offset'];
   if (offset !== undefined) dict['KEY_OFFSET'] = parseInt(offset);
+
+  var message_time = configData['message_time'];
+  if (offset !== undefined) dict['KEY_MESSAGE_TIME'] = parseInt(message_time);
 
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {

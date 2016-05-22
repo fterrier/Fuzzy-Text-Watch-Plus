@@ -8,6 +8,7 @@
 #define KEY_BOLD_TEXT 3
 #define KEY_LANGUAGE 4
 #define KEY_OFFSET 5
+#define KEY_MESSAGE_TIME 6
 
 #ifdef PBL_PLATFORM_CHALK
   // Pebble round screen resolution
@@ -53,7 +54,7 @@
 #define ANIMATION_OUT_IN_DELAY 100
 
 // How long to show messages, in seconds
-#define MESSAGE_DISPLAY_TIME 3
+#define BT_LOST_DISPLAY_TIME 12
 
 // How long to wait in seconds between connection lost notification and displaying message
 #define CONNECTION_LOST_MARGIN 2
@@ -87,6 +88,7 @@ void init_line(Line* line);
 struct tm *get_localtime();
 void refresh_time();
 void set_offset(int offset);
+void set_message_time(int mTime);
 void inbox_received_handler(DictionaryIterator *iter, void *context);
 void notify_bt_lost();
 void bt_handler(bool connected);

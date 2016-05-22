@@ -16,7 +16,7 @@
     text-align: center;
   }
 
-  .bw-config, .color-config, .language-config, .offset-config {
+  .bw-config, .color-config, .language-config, .offset-config, .message-time-config {
     display: none;
   }
 
@@ -105,7 +105,7 @@
     </div>
 
     <div class='item-container offset-config'>
-      <div class='item-container-header'>Time offset</div>
+      <div class='item-container-header'>Other</div>
       <div class='item-container-content'>
         <label class='item'>
           Time offset, minutes
@@ -128,6 +128,23 @@
       </div>
     </div>
 
+    <div class='item-container message-time-config'>
+      <div class='item-container-content'>
+        <label class='item'>
+            Greeting display time
+            <select id='message_time_choice' class='item-select'>
+            <option value="0">off</option>
+            <option value="1">1 second</option>
+            <option value="2">2 seconds</option>
+            <option value="3" selected>3 seconds</option>
+            <option value="4">4 seconds</option>
+          </select>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        When the watchface is started a greeting message is diplayed. This setting decides for how long.
+      </div>
+    </div>
 
     <!-- Keep this at the botton, just above the submit button -->
     <div class='item-container-footer' style="height: 50px"></div>
@@ -147,7 +164,7 @@
     var boldColorPicker = document.getElementById('bold_color_picker');
     var languageChoice = document.getElementById('language_choice');
     var offsetChoice = document.getElementById('offset_choice');
-
+    var messageTime = document.getElementById('message_time_choice');
  
     var options = {
       'inverse_colors': inverseColorCheckbox.checked,
@@ -155,7 +172,8 @@
       'regular_color': regularColorPicker.value,
       'bold_color': boldColorPicker.value,
       'language': languageChoice.value,
-      'offset': offsetChoice.value
+      'offset': offsetChoice.value,
+      'message_time': messageTime.value
     };
 
     // Save for next launch
@@ -165,6 +183,7 @@
     localStorage['bold_color'] = options['bold_color'];
     localStorage['language'] = options['language'];
     localStorage['offset'] = options['offset'];
+    localStorage['message_time'] = options['message_time'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -198,7 +217,8 @@
     var boldColorPicker = document.getElementById('bold_color_picker');
     var languageChoice = document.getElementById('language_choice');
     var offsetChoice = document.getElementById('offset_choice');
-    
+    var messageTime = document.getElementById('message_time_choice');
+
     // Load any previously saved configuration, if available
     if(localStorage['inverse_colors']) inverseColorCheckbox.checked = JSON.parse(localStorage['inverse_colors']);
     if(localStorage['background_color']) backgroundColorPicker.value = localStorage['background_color'];
@@ -206,7 +226,7 @@
     if(localStorage['bold_color']) boldColorPicker.value = localStorage['bold_color'];
     if(localStorage['language']) languageChoice.value = localStorage['language'];
     if(localStorage['offset']) offsetChoice.value = localStorage['offset'];
-
+    if(localStorage['message_time']) messageTime.value = localStorage['message_time'];
 
     var selected_configs = [];
 
@@ -227,6 +247,9 @@
       }
       if (version >= 34) {
         Array.prototype.push.apply(selected_configs, document.getElementsByClassName("offset-config"));        
+      }
+      if (version >= 40) {
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("message-time-config"));
       }
     }
 
