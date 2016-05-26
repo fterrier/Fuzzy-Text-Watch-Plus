@@ -4,7 +4,7 @@
   "longName": "Fuzzy Text Watch Plus",
   "companyName": "Mattias Backlund",
   "versionCode": 1,
-  "versionLabel": "3.9",
+  "versionLabel": "3.10",
   "watchapp": {
     "watchface": true
   },
