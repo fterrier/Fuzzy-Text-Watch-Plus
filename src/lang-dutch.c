@@ -1,6 +1,7 @@
 #include "num2words.h"
 
-// Language strings for Dutch
+// Translations by Edwin
+
 const Language LANG_DUTCH = {
 	.hours = {
 		"een",

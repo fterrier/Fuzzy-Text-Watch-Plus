@@ -1,5 +1,7 @@
 #include "num2words.h"
 
+// Translations by Andrea Riosa
+
 const Language LANG_ITALIAN = {
 
   .hours = {

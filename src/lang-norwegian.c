@@ -1,6 +1,8 @@
 #include "num2words.h"
 
 // Norska, bokmål
+// Translation by Øystein Raabe
+
 const Language LANG_NORWEGIAN = {
 
   .hours = {
