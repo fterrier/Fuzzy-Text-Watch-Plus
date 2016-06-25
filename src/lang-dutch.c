@@ -63,5 +63,7 @@ const Language LANG_DUTCH = {
 		"Goede nacht "
 	},
 #endif
-	.connection_lost = "Waar  is je tele- foon? "
+	.connection_lost = "Waar  is je tele- foon? ",
+
+    .number_of_exceptions = 0
 };

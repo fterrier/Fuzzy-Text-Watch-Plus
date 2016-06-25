@@ -62,5 +62,7 @@ const Language LANG_ENGLISH = {
   },
 #endif
 
-  .connection_lost = "Where  is your phone? "
+  .connection_lost = "Where  is your phone? ",
+
+    .number_of_exceptions = 0
 };

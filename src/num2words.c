@@ -61,34 +61,52 @@ const char* getFiveMinutePhrase(int fiveMinutePeriod) {
   return language->phrases[fiveMinutePeriod];
 }
 
+
+void check_exceptions(int hours, int pentaminutes, char* words, size_t length) {
+  int i;
+  for (i = 0; i < language->number_of_exceptions; i++) {
+    if (hours == language->exceptions[i].hours) {
+      if (pentaminutes == language->exceptions[i].pentaminutes) {
+        strncpy(words, language->exceptions[i].phrase, length);
+        return;
+      }
+    }
+  }
+}
+
 void time_to_words(int hours, int minutes, char* words, size_t length) {
 
   memset(words, 0, length);
 
   // Fuzzy time
   int fiveMinutePeriod = (minutes / 5) % 12;
-  char phrase[length]; 
-  strcpy(phrase, getFiveMinutePhrase(fiveMinutePeriod));
- 
-  char *variable = NULL;
-  const char *hour;
 
-  if ((variable = strstr(phrase, "$1")) != NULL) {
-    hour = getHourWord(hours);
-  }
-  else if ((variable = strstr(phrase, "$2")) != NULL) {
-    hour = getHourWord(hours + 1);
-  }
+  check_exceptions(hours, fiveMinutePeriod, words, length);
 
-  if (variable != NULL) {
-    // Substitute '$x' with '%s'
-    *variable = '%';
-    *(variable + 1) = 's';
-    snprintf(words, length, phrase, hour);
-  } else {
-    strncpy(words, phrase, length);
-  }
+  if (*words == '\0') {
+    // No exception
+    char phrase[length]; 
+    strcpy(phrase, getFiveMinutePhrase(fiveMinutePeriod));
+   
+    char *variable = NULL;
+    const char *hour;
 
+    if ((variable = strstr(phrase, "$1")) != NULL) {
+      hour = getHourWord(hours);
+    }
+    else if ((variable = strstr(phrase, "$2")) != NULL) {
+      hour = getHourWord(hours + 1);
+    }
+
+    if (variable != NULL) {
+      // Substitute '$x' with '%s'
+      *variable = '%';
+      *(variable + 1) = 's';
+      snprintf(words, length, phrase, hour);
+    } else {
+      strncpy(words, phrase, length);
+    }
+  }
 }
 
 void time_to_greeting(int hour, char* greeting)

@@ -43,7 +43,7 @@ const Language LANG_NORWEGIAN = {
     "God natt "
   },
 
-  .connection_lost = "Hvor  er tele- fonen din? "
+  .connection_lost = "Hvor  er tele- fonen din? ",
 #else
   .phrases = {
     "*$1 ",
@@ -67,8 +67,10 @@ const Language LANG_NORWEGIAN = {
     "God  natt "
   },
 
-  .connection_lost = "Hvor er tele- fonen din? "
+  .connection_lost = "Hvor er tele- fonen din? ",
 
 #endif
 
+
+    .number_of_exceptions = 0
 };

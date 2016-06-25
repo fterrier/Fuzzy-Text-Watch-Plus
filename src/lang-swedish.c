@@ -62,5 +62,7 @@ const Language LANG_SWEDISH = {
   },
 #endif
 
-  .connection_lost = "Var är din telefon "
+  .connection_lost = "Var är din telefon ",
+
+    .number_of_exceptions = 0
 };

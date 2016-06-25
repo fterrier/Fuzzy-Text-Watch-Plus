@@ -63,9 +63,10 @@ const Language LANG_ITALIAN = {
   },
 
 #ifdef PBL_PLATFORM_CHALK
-  .connection_lost = "Dov'è il tuo tele- fono? "
+  .connection_lost = "Dov'è il tuo tele- fono? ",
 #else
-  .connection_lost = "Dov'è il tuo  tele- fono? "
+  .connection_lost = "Dov'è il tuo  tele- fono? ",
 #endif
 
+    .number_of_exceptions = 0
 };

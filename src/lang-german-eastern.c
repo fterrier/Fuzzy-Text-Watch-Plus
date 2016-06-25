@@ -64,5 +64,23 @@ const Language LANG_GERMAN_E = {
   },
 #endif
 
-  .connection_lost = "Wo ist dein Handy? "
+  .connection_lost = "Wo ist dein Handy? ",
+
+  .number_of_exceptions = 2,
+
+  .exceptions = {
+     {
+       .hours = 1,
+       .pentaminutes = 0,
+       .phrase = "*ein uhr "
+     },
+     {
+       .hours = 13,
+       .pentaminutes = 0,
+       .phrase = "*ein uhr "
+     }
+  }
 };
+
+
+

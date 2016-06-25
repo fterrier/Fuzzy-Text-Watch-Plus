@@ -12,10 +12,18 @@
 #define LANG_GW 8
 
 typedef struct {
+	const int const hours;
+	const int const pentaminutes;
+	const char* const phrase;
+} Exception;
+
+typedef struct {	
 	const char* const hours[12];
 	const char* const phrases[12];
 	const char* const greetings[4];
 	const char* const connection_lost;
+	const int number_of_exceptions;
+	const Exception const exceptions[];
 } Language;
 
 void time_to_words(int hours, int minutes, char* words, size_t length);

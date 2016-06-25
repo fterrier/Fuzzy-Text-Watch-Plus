@@ -57,9 +57,11 @@ const Language LANG_SPANISH = {
   },
 
 #ifdef PBL_PLATFORM_CHALK
-  .connection_lost = "Dónde está tu teléfono "
+  .connection_lost = "Dónde está tu teléfono ",
 #else
-  .connection_lost = "Dónde está tu telé- fono "
+  .connection_lost = "Dónde está tu telé- fono ",
 #endif
 
+
+    .number_of_exceptions = 0
 };
