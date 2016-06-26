@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-  <meta charset="UTF-8">
-  <title>Fuzzy Text - Configuration</title>
-  <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
-  <script src='js/slate.min.js'></script>
-  <style>
-  .title {
-    padding: 15px 10px;
-    text-transform: uppercase;
-    font-family: 'PT Sans', sans-serif;
-    font-size: 1.2em;
-    font-weight: 500;
-    color: #888888;
-    text-align: center;
-  }
+    <meta charset="UTF-8">
+    <title>Fuzzy Text - Configuration</title>
+    <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+    <script src='js/slate.min.js'></script>
+    <style>
+      .title {
+        padding: 15px 10px;
+        text-transform: uppercase;
+        font-family: 'PT Sans', sans-serif;
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #888888;
+        text-align: center;
+      }
 
-  .bw-config, .color-config, .language-config, .offset-config, .message-time-config {
-    display: none;
-  }
+      .bw-config, .color-config, .language-config, .offset-config, .message-time-config {
+        display: none;
+      }
 
-  .fixed-bottom {
-    position: fixed; 
-    bottom:0%;
-    width:100%;
-    background-color: rgba(234,234,234,0.9);
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border-top: 1px solid #dedede;
-  }
+      .fixed-bottom {
+        position: fixed; 
+        bottom:0%;
+        width:100%;
+        background-color: rgba(234,234,234,0.9);
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-top: 1px solid #dedede;
+      }
 
-  </style>
+    </style>
   </head>
 
   <body>
@@ -41,16 +41,7 @@
       <div class='item-container-content'>
         <label class='item'>
           Select language
-          <select id='language_choice' class='item-select'>
-            <option value="7">Deutsch (O)</option>
-            <option value="8">Deutsch (W)</option>
-            <option value="2">English</option>
-            <option value="6">Español</option>
-            <option value="5">Italiano</option>
-            <option value="4">Nederlands</option>
-            <option value="3">Norsk</option>
-            <option value="1" selected>Svenska</option>
-          </select>
+          <select id='language_choice' class='item-select'></select>
         </label>
       </div>
     </div>
@@ -221,6 +212,63 @@
     var offsetChoice = document.getElementById('offset_choice');
     var messageTime = document.getElementById('message_time_choice');
 
+    var selected_configs = [];
+    var available_languages = {};
+
+    // Setup black n´ white or color options
+    if (getQueryParam("bw")) {
+      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("bw-config"));
+    } else {
+      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("color-config"));
+    }
+
+    // Add option and language avabilities depending on client version
+    var version = getQueryParam("v");
+    if (version > 0) {
+      if (version >= 33) {
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("language-config"));        
+        available_languages["Svenska"] = 1;
+        available_languages["English"] = 2;
+        available_languages["Norsk"] = 3;
+      }
+      if (version >= 34) {
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("offset-config"));        
+        available_languages["Nederlands"] = 4;
+      }
+      if (version >= 35) {
+        available_languages["Italiano"] = 5;
+      }
+      if (version >= 38) {
+        available_languages["Español"] = 6;
+      }
+      if (version >= 40) {
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("message-time-config"));
+      }
+      if (version >= 41) {
+        available_languages["Deutsch (O)"] = 7;
+        available_languages["Deutsch (w)"] = 8;
+      }
+    }
+
+    // Make all available options visible
+    for (var i = 0; i < selected_configs.length; i++) {
+      selected_configs[i].style.display = "block";
+    }
+
+    // Add all languages sorted by name
+    keys = [];
+    for (key in available_languages) {
+      if (available_languages.hasOwnProperty(key)) {
+        keys.push(key);
+      }
+    }
+    keys.sort();
+    for (var i = 0; i < keys.length; i++) {
+      console.log(keys[i] + ": " + available_languages[keys[i]]);
+      languageChoice.options[languageChoice.options.length] = new Option(keys[i], available_languages[keys[i]]);
+    }
+    languageChoice.value = 1;
+
     // Load any previously saved configuration, if available
     if(localStorage['inverse_colors']) inverseColorCheckbox.checked = JSON.parse(localStorage['inverse_colors']);
     if(localStorage['background_color']) backgroundColorPicker.value = localStorage['background_color'];
@@ -229,35 +277,6 @@
     if(localStorage['language']) languageChoice.value = localStorage['language'];
     if(localStorage['offset']) offsetChoice.value = localStorage['offset'];
     if(localStorage['message_time']) messageTime.value = localStorage['message_time'];
-
-    var selected_configs = [];
-
-    if (getQueryParam("bw")) {
-      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("bw-config"));
-    } else {
-      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("color-config"));
-    }
-
-    if (getQueryParam("lang")) {
-      Array.prototype.push.apply(selected_configs, document.getElementsByClassName("language-config"));
-    }
-
-    var version = getQueryParam("v");
-    if (version > 0) {
-      if (version >= 33) {
-        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("language-config"));        
-      }
-      if (version >= 34) {
-        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("offset-config"));        
-      }
-      if (version >= 40) {
-        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("message-time-config"));
-      }
-    }
-
-    for (var i = 0; i < selected_configs.length; i++) {
-      selected_configs[i].style.display = "block";
-    }
 
   })();
   </script>
