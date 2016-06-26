@@ -1,5 +1,5 @@
 // Watchface config version 
-var version=40;
+var version=41;
 
 Pebble.addEventListener('ready', function() {
   console.log('PebbleKit JS ready!');
