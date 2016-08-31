@@ -38,6 +38,10 @@ time_t connectionLostTime = 0;
 // greeting messages.
 int messageTime = 3;
 
+// Screen resolution. Set in the init function.
+int xres;
+int yres;
+
 // UTF8 aware strlen() for a sequence of bytes
 int strlenUtf8(char *start, char *end) 
 {
@@ -56,7 +60,7 @@ void animationStoppedHandler(struct Animation *animation, bool finished, void *c
 {
 	TextLayer *current = (TextLayer *)context;
 	GRect rect = layer_get_frame((Layer *)current);
-	rect.origin.x = XRES;
+	rect.origin.x = xres;
 	layer_set_frame((Layer *)current, rect);
 }
 
@@ -80,7 +84,7 @@ void makeAnimationsForLayer(Line *line, int delay)
 
 	// Configure animation for current layer to move out
 	GRect rect = layer_get_frame((Layer *)current);
-	rect.origin.x =  -XRES;
+	rect.origin.x =  -xres;
 	line->animation1 = property_animation_create_layer_frame((Layer *)current, NULL, &rect);
 	Animation *animation = property_animation_get_animation(line->animation1);
 	animation_set_duration(animation, ANIMATION_DURATION);
@@ -203,12 +207,12 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 	numLines = i;
 
 	// Calculate y position of top Line
-	int ypos = (YRES - height) / 2 - TOP_MARGIN;
+	int ypos = (yres - height) / 2 - TOP_MARGIN;
 
 	// Set y positions for the lines
 	for (int i = 0; i < numLines; i++)
 	{
-		layer_set_frame((Layer *)lines[i].nextLayer, GRect(XRES, ypos, XRES, ROW_HEIGHT));
+		layer_set_frame((Layer *)lines[i].nextLayer, GRect(xres, ypos, xres, ROW_HEIGHT));
 		ypos += offsets[i];
 	}
 
@@ -378,8 +382,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 
 void init_line(Line* line) {
 	// Create layers with dummy position to the right of the screen
-	line->currentLayer = text_layer_create(GRect(XRES, 0, XRES, ROW_HEIGHT));
-	line->nextLayer = text_layer_create(GRect(XRES, 0, XRES, ROW_HEIGHT));
+	line->currentLayer = text_layer_create(GRect(xres, 0, xres, ROW_HEIGHT));
+	line->nextLayer = text_layer_create(GRect(xres, 0, xres, ROW_HEIGHT));
 
 	// Configure a style
 	configureLightLayer(line->currentLayer);
@@ -561,14 +565,19 @@ void handle_init() {
 	window = window_create();
 	window_stack_push(window, true);
 
+	Layer *window_layer = window_get_root_layer(window);
+    GRect window_bounds = layer_get_bounds(window_layer);
+    xres = window_bounds.size.w;
+    yres = window_bounds.size.h;
+
 	readPersistedState();
 
 	// Init and load lines
 	for (int i = 0; i < NUM_LINES; i++)
 	{
 		init_line(&lines[i]);
-	  	layer_add_child(window_get_root_layer(window), (Layer *)lines[i].currentLayer);
-		layer_add_child(window_get_root_layer(window), (Layer *)lines[i].nextLayer);
+	  	layer_add_child(window_layer, (Layer *)lines[i].currentLayer);
+		layer_add_child(window_layer, (Layer *)lines[i].nextLayer);
 	}
 
 	// Show greeting message

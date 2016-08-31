@@ -10,16 +10,6 @@
 #define KEY_OFFSET 5
 #define KEY_MESSAGE_TIME 6
 
-#ifdef PBL_PLATFORM_CHALK
-  // Pebble round screen resolution
-  #define XRES 180
-  #define YRES 180
-#else
-  // Pebble square screen resolution ;)
-  #define XRES 144
-  #define YRES 168
-#endif
-
 // Max number of characters in a line
 #define LINE_LENGTH 9
 // How many characters must be available in a line to consider adding a second word
