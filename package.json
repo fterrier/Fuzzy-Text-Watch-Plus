@@ -28,7 +28,8 @@
       "KEY_BACKGROUND": 1,
       "KEY_OFFSET": 5,
       "KEY_BOLD_TEXT": 3,
-      "KEY_GESTURE": 7
+      "KEY_GESTURE": 7,
+      "KEY_BT_NOTIFICATION": 8
     },
     "enableMultiJS": false,
     "displayName": "Fuzzy Text Watch Plus",

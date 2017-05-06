@@ -49,6 +49,9 @@ Pebble.addEventListener('webviewclosed', function(e) {
   var gesture = configData['gesture'];
   if (gesture !== undefined) dict['KEY_GESTURE'] = parseInt(gesture);
 
+  var bt_notification = configData['bt_notification'];
+  if (bt_notification !== undefined) dict['KEY_BT_NOTIFICATION'] = parseInt(bt_notification);
+
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {
     console.log('Send successful: ' + JSON.stringify(dict));

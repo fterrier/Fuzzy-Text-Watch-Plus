@@ -16,7 +16,14 @@
         text-align: center;
       }
 
-      .bw-config, .color-config, .language-config, .offset-config, .message-time-config, .gesture-config {
+      .bw-config,
+      .color-config,
+      .language-config,
+      .offset-config,
+      .message-time-config,
+      .gesture-config,
+      .bt-lost-config
+      {
         display: none;
       }
 
@@ -97,10 +104,27 @@
       </div>
     </div>
 
+    <div class='item-container  bt-lost-config'>
+    <div class='item-container-header'>Notifications</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Notification when connection is lost
+              <select id='bt_choice' class='item-select'>
+              <option value="0">Off</option>
+              <option value="1">Message only</option>
+              <option value="2" selected>Buzz and message</option>
+            </select>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        Notifies with a buzz and a message if the connection to the phone is lost. (The buzz will always be disabled if Quiet Time is enabled.)
+      </div>
+    </div>
+
     <div class='item-container offset-config'>
       <div class='item-container-header'>Other</div>
      
-      <div class='item-container gesture-config'>
+      <div class='gesture-config' style='margin-bottom: 1em'>
         <div class='item-container-content'>
           <label class='item'>
               Show date on gesture
@@ -118,7 +142,7 @@
         </div>
       </div>
 
-      <div class='item-container-content'>
+      <div class='item-container-content offset-config'>
         <label class='item'>
           Time offset, minutes
           <select id='offset_choice' class='item-select'>
@@ -146,7 +170,6 @@
             Greeting display time
             <select id='message_time_choice' class='item-select'>
             <option value="0">off</option>
-            <option value="1">1 second</option>
             <option value="2">2 seconds</option>
             <option value="3" selected>3 seconds</option>
             <option value="4">4 seconds</option>
@@ -178,7 +201,8 @@
     var offsetChoice = document.getElementById('offset_choice');
     var messageTime = document.getElementById('message_time_choice');
     var gesture = document.getElementById('gesture_choice');
- 
+    var btLostNotification = document.getElementById('bt_choice');
+
     var options = {
       'inverse_colors': inverseColorCheckbox.checked,
       'background_color': backgroundColorPicker.value,
@@ -187,7 +211,8 @@
       'language': languageChoice.value,
       'offset': offsetChoice.value,
       'message_time': messageTime.value,
-      'gesture': gesture.value
+      'gesture': gesture.value,
+      'bt_notification': btLostNotification.value
     };
 
     // Save for next launch
@@ -199,6 +224,7 @@
     localStorage['offset'] = options['offset'];
     localStorage['message_time'] = options['message_time'];
     localStorage['gesture'] = options['gesture'];
+    localStorage['bt_notification'] = options['bt_notification'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -234,6 +260,7 @@
     var offsetChoice = document.getElementById('offset_choice');
     var messageTime = document.getElementById('message_time_choice');
     var gesture = document.getElementById('gesture_choice');
+    var btLostNotification = document.getElementById('bt_choice');
 
     var selected_configs = [];
     var available_languages = {};
@@ -273,6 +300,7 @@
       }
       if (version >= 42) {
         Array.prototype.push.apply(selected_configs, document.getElementsByClassName("gesture-config"));
+        Array.prototype.push.apply(selected_configs, document.getElementsByClassName("bt-lost-config"));
       }
     }
 
@@ -304,6 +332,7 @@
     if(localStorage['offset']) offsetChoice.value = localStorage['offset'];
     if(localStorage['message_time']) messageTime.value = localStorage['message_time'];
     if(localStorage['gesture']) gesture.value = localStorage['gesture'];
+    if(localStorage['bt_notification']) btLostNotification.value = localStorage['bt_notification'];
 
   })();
   </script>

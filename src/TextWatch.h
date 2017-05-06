@@ -10,6 +10,7 @@
 #define KEY_OFFSET 5
 #define KEY_MESSAGE_TIME 6
 #define KEY_GESTURE 7
+#define KEY_BT_NOTIFICATION 8
 
 // Max number of characters in a line
 #define LINE_LENGTH 9
@@ -56,6 +57,10 @@
 #define GESTURE_Y    2
 #define GESTURE_Z    3
 #define GESTURE_ANY  4
+
+#define BT_NOTIFY_OFF      0
+#define BT_NOTIFY_NO_VIBE  1
+#define BT_NOTIFY_ON       2
 
 
 // Data structures

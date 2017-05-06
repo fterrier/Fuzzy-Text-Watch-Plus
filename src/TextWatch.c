@@ -44,7 +44,13 @@ int messageTime = 3;
 // 2 = flick wrist (Y-axis)
 // 3 = Shake up/down (Z-axis)
 // 4 = Any shake
-int dateGesture = 4;
+int dateGesture = GESTURE_ANY;
+
+// Notify when BT connection is lost?
+// 0 = off
+// 1 = text and light only
+// 2 = on
+int bt_lost_notification = BT_NOTIFY_ON;
 
 // Screen resolution. Set in the init function.
 int xres;
@@ -485,6 +491,10 @@ void set_gesture(int gesture) {
 	}
 }
 
+void set_bt_lost_notification(int bt_notification) {
+	bt_lost_notification = bt_notification;
+}
+
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Received inbox message");
 
@@ -518,6 +528,14 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   	set_gesture(gesture_t->value->uint8);
   	persist_write_int(KEY_GESTURE, gesture_t->value->uint8);
   	APP_LOG(APP_LOG_LEVEL_DEBUG, "Gesture is %d", gesture_t->value->uint8);
+  }
+
+  // BT lost notification
+  Tuple *bt_notification_t = dict_find(iter, KEY_BT_NOTIFICATION);
+  if (bt_notification_t) {
+  	set_bt_lost_notification(bt_notification_t->value->uint8);
+  	persist_write_int(KEY_BT_NOTIFICATION, bt_notification_t->value->uint8);
+  	APP_LOG(APP_LOG_LEVEL_DEBUG, "BT notification is %d", bt_notification_t->value->uint8);
   }
 
 #ifdef PBL_COLOR
@@ -574,11 +592,15 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
 }
 
 void notify_bt_lost() {
-	vibes_long_pulse();
-	light_enable_interaction();
-	char message[48];
-	get_connection_lost_message(message);
-	display_message(message, BT_LOST_DISPLAY_TIME);	
+	if (bt_lost_notification != BT_NOTIFY_OFF) {
+		if (bt_lost_notification == BT_NOTIFY_ON && !quiet_time_is_active()) {
+			vibes_long_pulse();
+		}
+		light_enable_interaction();
+		char message[48];
+		get_connection_lost_message(message);
+		display_message(message, BT_LOST_DISPLAY_TIME);	
+	}
 }
 
 void bt_handler(bool connected) {
@@ -606,6 +628,10 @@ void readPersistedState() {
 
 	if (persist_exists(KEY_GESTURE)) {
 		set_gesture(persist_read_int(KEY_GESTURE));
+	}
+
+	if (persist_exists(KEY_BT_NOTIFICATION)) {
+		set_gesture(persist_read_int(KEY_BT_NOTIFICATION));
 	}
 
 	// Set default colors
