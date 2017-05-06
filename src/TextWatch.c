@@ -169,6 +169,15 @@ void configureLightLayer(TextLayer *textlayer)
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
 
+// Configure small line of text
+void configureSmallLayer(TextLayer *textlayer)
+{
+	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+	text_layer_set_text_color(textlayer, regularTextColor);
+	text_layer_set_background_color(textlayer, GColorClear);
+	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
+}
+
 // Configure the layers for the given text
 int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 {
@@ -191,6 +200,16 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 		else if (format[i] == 'b') // Small bold
 		{
 			configureSmallBoldLayer(lines[i].nextLayer);
+			offsets[i] = ROW_OFFSET_SMALL;
+			// If there is a line above, increase its offset a bit 
+			if (i > 0) {
+				offsets[i - 1] += TOP_MARGIN_SMALL;
+				height += TOP_MARGIN_SMALL;
+			}
+		}
+		else if (format[i] == 's') // Small
+		{
+			configureSmallLayer(lines[i].nextLayer);
 			offsets[i] = ROW_OFFSET_SMALL;
 			// If there is a line above, increase its offset a bit 
 			if (i > 0) {
@@ -243,8 +262,11 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 				start++;
 			}
 		}
-		else
-		{
+		else if (*start == '<' && end - start > 1) {
+			// Mark line small
+			format[l] = 's';
+			start++;
+		} else {
 			// Mark line normal
 			format[l] = ' ';
 		}
@@ -288,7 +310,7 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 // Update screen based on new time
 void display_message(char *message, int displayTime)
 {
-	if (displayTime > 0) {
+	if (displayTime > 0 && resetMessageTime == 0) {
 		// The current time text will be stored in the following strings
 		char textLine[NUM_LINES][BUFFER_SIZE];
 		char format[NUM_LINES];
@@ -351,6 +373,32 @@ void display_time(struct tm *t, bool force)
 	}
 	
 	currentNLines = nextNLines;
+}
+
+static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+  // Read sample 0's x, y, and z values
+/*  char* axis_string;
+  if (axis == ACCEL_AXIS_X) {
+  	axis_string = "X";
+  }
+  if (axis == ACCEL_AXIS_Y) {
+  	axis_string = "Y";
+  }
+  if (axis == ACCEL_AXIS_Z) {
+  	axis_string = "Z";
+  }
+*/
+  struct tm* t = get_localtime();
+
+  char message[32];
+  snprintf(message, 32, "<%02d:%02d:%02d  %d/%d  %d ",
+  	t->tm_hour,
+  	t->tm_min,
+  	t->tm_sec,
+  	t->tm_mday,
+  	t->tm_mon + 1,
+  	t->tm_year + 1900);
+  display_message(message, 6);
 }
 
 void check_connection(time_t *now) {
@@ -598,6 +646,9 @@ void handle_init() {
 	connection_service_subscribe((ConnectionHandlers) {
 	  .pebble_app_connection_handler = bt_handler
 	});
+
+	// Subscribe to taps
+	accel_tap_service_subscribe(accel_tap_handler);
 
 	// Set up listener for configuration changes
 	app_message_register_inbox_received(inbox_received_handler);
