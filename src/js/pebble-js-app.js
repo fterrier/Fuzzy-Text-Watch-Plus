@@ -1,5 +1,5 @@
 // Watchface config version 
-var version=41;
+var version=42;
 
 Pebble.addEventListener('ready', function() {
   console.log('PebbleKit JS ready!');
@@ -44,7 +44,13 @@ Pebble.addEventListener('webviewclosed', function(e) {
   if (offset !== undefined) dict['KEY_OFFSET'] = parseInt(offset);
 
   var message_time = configData['message_time'];
-  if (offset !== undefined) dict['KEY_MESSAGE_TIME'] = parseInt(message_time);
+  if (message_time !== undefined) dict['KEY_MESSAGE_TIME'] = parseInt(message_time);
+
+  var gesture = configData['gesture'];
+  if (gesture !== undefined) dict['KEY_GESTURE'] = parseInt(gesture);
+
+  var bt_notification = configData['bt_notification'];
+  if (bt_notification !== undefined) dict['KEY_BT_NOTIFICATION'] = parseInt(bt_notification);
 
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {

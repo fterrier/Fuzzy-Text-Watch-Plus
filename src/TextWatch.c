@@ -38,6 +38,20 @@ time_t connectionLostTime = 0;
 // greeting messages.
 int messageTime = 3;
 
+// Which gesture to activate date screen
+// 0 = off
+// 1 = Boxing move (X-axis)
+// 2 = flick wrist (Y-axis)
+// 3 = Shake up/down (Z-axis)
+// 4 = Any shake
+int dateGesture = GESTURE_ANY;
+
+// Notify when BT connection is lost?
+// 0 = off
+// 1 = text and light only
+// 2 = on
+int bt_lost_notification = BT_NOTIFY_ON;
+
 // Screen resolution. Set in the init function.
 int xres;
 int yres;
@@ -169,6 +183,15 @@ void configureLightLayer(TextLayer *textlayer)
 	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
 }
 
+// Configure small line of text
+void configureSmallLayer(TextLayer *textlayer)
+{
+	text_layer_set_font(textlayer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+	text_layer_set_text_color(textlayer, regularTextColor);
+	text_layer_set_background_color(textlayer, GColorClear);
+	text_layer_set_text_alignment(textlayer, TEXT_ALIGN);
+}
+
 // Configure the layers for the given text
 int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 {
@@ -191,6 +214,16 @@ int configureLayersForText(char text[NUM_LINES][BUFFER_SIZE], char format[])
 		else if (format[i] == 'b') // Small bold
 		{
 			configureSmallBoldLayer(lines[i].nextLayer);
+			offsets[i] = ROW_OFFSET_SMALL;
+			// If there is a line above, increase its offset a bit 
+			if (i > 0) {
+				offsets[i - 1] += TOP_MARGIN_SMALL;
+				height += TOP_MARGIN_SMALL;
+			}
+		}
+		else if (format[i] == 's') // Small
+		{
+			configureSmallLayer(lines[i].nextLayer);
 			offsets[i] = ROW_OFFSET_SMALL;
 			// If there is a line above, increase its offset a bit 
 			if (i > 0) {
@@ -243,8 +276,11 @@ void string_to_lines(char *str, char lines[NUM_LINES][BUFFER_SIZE], char format[
 				start++;
 			}
 		}
-		else
-		{
+		else if (*start == '<' && end - start > 1) {
+			// Mark line small
+			format[l] = 's';
+			start++;
+		} else {
 			// Mark line normal
 			format[l] = ' ';
 		}
@@ -288,7 +324,7 @@ void time_to_lines(int hours, int minutes, char lines[NUM_LINES][BUFFER_SIZE], c
 // Update screen based on new time
 void display_message(char *message, int displayTime)
 {
-	if (displayTime > 0) {
+	if (displayTime > 0 && resetMessageTime == 0) {
 		// The current time text will be stored in the following strings
 		char textLine[NUM_LINES][BUFFER_SIZE];
 		char format[NUM_LINES];
@@ -351,6 +387,34 @@ void display_time(struct tm *t, bool force)
 	}
 	
 	currentNLines = nextNLines;
+}
+
+static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Tap event: %d  conf: %d", axis, dateGesture);
+
+  if (dateGesture != GESTURE_ANY) {
+  	if (axis == ACCEL_AXIS_X && dateGesture != GESTURE_X) {
+	  return;
+	}
+  	if (axis == ACCEL_AXIS_Y && dateGesture != GESTURE_Y) {
+	  return;
+	}
+  	if (axis == ACCEL_AXIS_Z && dateGesture != GESTURE_Z) {
+	  return;
+	}
+  }
+
+  struct tm* t = get_localtime();
+  char message[32];
+  snprintf(message, 32, "<%02d:%02d:%02d  %d/%d  %d ",
+  	t->tm_hour,
+  	t->tm_min,
+  	t->tm_sec,
+  	t->tm_mday,
+  	t->tm_mon + 1,
+  	t->tm_year + 1900);
+  display_message(message, 6);
 }
 
 void check_connection(time_t *now) {
@@ -419,6 +483,18 @@ void set_message_time(int mTime) {
 	messageTime = mTime;
 }
 
+void set_gesture(int gesture) {
+	dateGesture = gesture;
+	accel_tap_service_unsubscribe();
+	if (gesture != GESTURE_OFF) {
+		accel_tap_service_subscribe(accel_tap_handler);
+	}
+}
+
+void set_bt_lost_notification(int bt_notification) {
+	bt_lost_notification = bt_notification;
+}
+
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Received inbox message");
 
@@ -444,6 +520,22 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   	set_message_time(message_time_t->value->uint8);
   	persist_write_int(KEY_MESSAGE_TIME, message_time_t->value->uint8);
   	APP_LOG(APP_LOG_LEVEL_DEBUG, "Message time is %d", message_time_t->value->uint8);
+  }
+
+  // Gesture
+  Tuple *gesture_t = dict_find(iter, KEY_GESTURE);
+  if (gesture_t) {
+  	set_gesture(gesture_t->value->uint8);
+  	persist_write_int(KEY_GESTURE, gesture_t->value->uint8);
+  	APP_LOG(APP_LOG_LEVEL_DEBUG, "Gesture is %d", gesture_t->value->uint8);
+  }
+
+  // BT lost notification
+  Tuple *bt_notification_t = dict_find(iter, KEY_BT_NOTIFICATION);
+  if (bt_notification_t) {
+  	set_bt_lost_notification(bt_notification_t->value->uint8);
+  	persist_write_int(KEY_BT_NOTIFICATION, bt_notification_t->value->uint8);
+  	APP_LOG(APP_LOG_LEVEL_DEBUG, "BT notification is %d", bt_notification_t->value->uint8);
   }
 
 #ifdef PBL_COLOR
@@ -500,11 +592,15 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
 }
 
 void notify_bt_lost() {
-	vibes_long_pulse();
-	light_enable_interaction();
-	char message[48];
-	get_connection_lost_message(message);
-	display_message(message, BT_LOST_DISPLAY_TIME);	
+	if (bt_lost_notification != BT_NOTIFY_OFF) {
+		if (bt_lost_notification == BT_NOTIFY_ON && !quiet_time_is_active()) {
+			vibes_long_pulse();
+		}
+		light_enable_interaction();
+		char message[48];
+		get_connection_lost_message(message);
+		display_message(message, BT_LOST_DISPLAY_TIME);	
+	}
 }
 
 void bt_handler(bool connected) {
@@ -528,6 +624,14 @@ void readPersistedState() {
 
 	if (persist_exists(KEY_MESSAGE_TIME)) {
 		set_message_time(persist_read_int(KEY_MESSAGE_TIME));
+	}
+
+	if (persist_exists(KEY_GESTURE)) {
+		set_gesture(persist_read_int(KEY_GESTURE));
+	}
+
+	if (persist_exists(KEY_BT_NOTIFICATION)) {
+		set_gesture(persist_read_int(KEY_BT_NOTIFICATION));
 	}
 
 	// Set default colors
@@ -569,6 +673,10 @@ void handle_init() {
     GRect window_bounds = layer_get_bounds(window_layer);
     xres = window_bounds.size.w;
     yres = window_bounds.size.h;
+
+    // Subscribe to taps
+	accel_tap_service_subscribe(accel_tap_handler);
+
 
 	readPersistedState();
 
