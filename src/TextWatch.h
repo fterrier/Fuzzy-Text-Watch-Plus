@@ -9,6 +9,7 @@
 #define KEY_LANGUAGE 4
 #define KEY_OFFSET 5
 #define KEY_MESSAGE_TIME 6
+#define KEY_GESTURE 7
 
 // Max number of characters in a line
 #define LINE_LENGTH 9
@@ -48,6 +49,14 @@
 
 // How long to wait in seconds between connection lost notification and displaying message
 #define CONNECTION_LOST_MARGIN 2
+
+// Gestures
+#define GESTURE_OFF  0
+#define GESTURE_X    1
+#define GESTURE_Y    2
+#define GESTURE_Z    3
+#define GESTURE_ANY  4
+
 
 // Data structures
 typedef struct {

@@ -38,6 +38,14 @@ time_t connectionLostTime = 0;
 // greeting messages.
 int messageTime = 3;
 
+// Which gesture to activate date screen
+// 0 = off
+// 1 = Boxing move (X-axis)
+// 2 = flick wrist (Y-axis)
+// 3 = Shake up/down (Z-axis)
+// 4 = Any shake
+int dateGesture = 4;
+
 // Screen resolution. Set in the init function.
 int xres;
 int yres;
@@ -376,20 +384,22 @@ void display_time(struct tm *t, bool force)
 }
 
 static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-  // Read sample 0's x, y, and z values
-/*  char* axis_string;
-  if (axis == ACCEL_AXIS_X) {
-  	axis_string = "X";
-  }
-  if (axis == ACCEL_AXIS_Y) {
-  	axis_string = "Y";
-  }
-  if (axis == ACCEL_AXIS_Z) {
-  	axis_string = "Z";
-  }
-*/
-  struct tm* t = get_localtime();
 
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Tap event: %d  conf: %d", axis, dateGesture);
+
+  if (dateGesture != GESTURE_ANY) {
+  	if (axis == ACCEL_AXIS_X && dateGesture != GESTURE_X) {
+	  return;
+	}
+  	if (axis == ACCEL_AXIS_Y && dateGesture != GESTURE_Y) {
+	  return;
+	}
+  	if (axis == ACCEL_AXIS_Z && dateGesture != GESTURE_Z) {
+	  return;
+	}
+  }
+
+  struct tm* t = get_localtime();
   char message[32];
   snprintf(message, 32, "<%02d:%02d:%02d  %d/%d  %d ",
   	t->tm_hour,
@@ -467,6 +477,14 @@ void set_message_time(int mTime) {
 	messageTime = mTime;
 }
 
+void set_gesture(int gesture) {
+	dateGesture = gesture;
+	accel_tap_service_unsubscribe();
+	if (gesture != GESTURE_OFF) {
+		accel_tap_service_subscribe(accel_tap_handler);
+	}
+}
+
 void inbox_received_handler(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Received inbox message");
 
@@ -492,6 +510,14 @@ void inbox_received_handler(DictionaryIterator *iter, void *context) {
   	set_message_time(message_time_t->value->uint8);
   	persist_write_int(KEY_MESSAGE_TIME, message_time_t->value->uint8);
   	APP_LOG(APP_LOG_LEVEL_DEBUG, "Message time is %d", message_time_t->value->uint8);
+  }
+
+  // Gesture
+  Tuple *gesture_t = dict_find(iter, KEY_GESTURE);
+  if (gesture_t) {
+  	set_gesture(gesture_t->value->uint8);
+  	persist_write_int(KEY_GESTURE, gesture_t->value->uint8);
+  	APP_LOG(APP_LOG_LEVEL_DEBUG, "Gesture is %d", gesture_t->value->uint8);
   }
 
 #ifdef PBL_COLOR
@@ -578,6 +604,10 @@ void readPersistedState() {
 		set_message_time(persist_read_int(KEY_MESSAGE_TIME));
 	}
 
+	if (persist_exists(KEY_GESTURE)) {
+		set_gesture(persist_read_int(KEY_GESTURE));
+	}
+
 	// Set default colors
 	GColor8 backgroundColor;
 	backgroundColor.argb = GColorBlack.argb;
@@ -618,6 +648,10 @@ void handle_init() {
     xres = window_bounds.size.w;
     yres = window_bounds.size.h;
 
+    // Subscribe to taps
+	accel_tap_service_subscribe(accel_tap_handler);
+
+
 	readPersistedState();
 
 	// Init and load lines
@@ -646,9 +680,6 @@ void handle_init() {
 	connection_service_subscribe((ConnectionHandlers) {
 	  .pebble_app_connection_handler = bt_handler
 	});
-
-	// Subscribe to taps
-	accel_tap_service_subscribe(accel_tap_handler);
 
 	// Set up listener for configuration changes
 	app_message_register_inbox_received(inbox_received_handler);
