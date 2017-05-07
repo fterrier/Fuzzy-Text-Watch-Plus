@@ -20,7 +20,7 @@ const Language LANG_NORWEGIAN = {
     "tolv"
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .phrases = {
     "*$1 ",
     "fem over *$1 ",

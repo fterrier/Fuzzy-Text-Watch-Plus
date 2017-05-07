@@ -8,7 +8,7 @@ const Language LANG_ITALIAN = {
     "una",
     "due",
     "tre",
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
     "quattro",
 #else
     "<quattro",
@@ -23,7 +23,7 @@ const Language LANG_ITALIAN = {
     "dodici"
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .phrases = {
     "*$1 in punto ",
     "*$1 e cinque ",
@@ -62,7 +62,7 @@ const Language LANG_ITALIAN = {
     "Buona notte "
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .connection_lost = "Dov'è il tuo tele- fono? ",
 #else
   .connection_lost = "Dov'è il tuo  tele- fono? ",

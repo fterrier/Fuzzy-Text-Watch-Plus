@@ -17,7 +17,7 @@ const Language LANG_SPANISH = {
       "doce"
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .phrases = {
       "*$1 en punto ",
       "*$1 y cinco ",
@@ -56,7 +56,7 @@ const Language LANG_SPANISH = {
     "Buenas noches "
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .connection_lost = "Dónde está tu teléfono ",
 #else
   .connection_lost = "Dónde está tu telé- fono ",

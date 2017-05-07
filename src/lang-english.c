@@ -16,7 +16,7 @@ const Language LANG_ENGLISH = {
     "twelve"
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .phrases = {
     "*$1 o'clock ",
     "five past *$1 ",

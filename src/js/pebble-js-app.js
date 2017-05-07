@@ -9,7 +9,7 @@ Pebble.addEventListener('showConfiguration', function() {
   var url = 'http://fuzzytextconfig-sarastro.rhcloud.com/config/index.html?v=' + version;
   //var url = 'file:///Users/mattias/gitroot/Fuzzy-Text-watch-Plus/config/index.html?v=' + version;
 
-  if (getWatchVersion() < 3) { // Black n white
+  if (!hasColor()) { // Black n white
     url = url + "&bw";
   }
 
@@ -76,33 +76,17 @@ function hexColorToARGB2222(color) {
   return 0;
 }
 
-function getWatchVersion() {
-  // 1 = Pebble OG
-  // 2 = Pebble Steel
-  // 3 = Pebble Time
-  // 4 = Pebble Time Steel
-  // 5 = Pebble Time Round
-
-  var watch_version = 1;
+function hasColor() {
+  var has_color = false;
  
   if(Pebble.getActiveWatchInfo) {
-    // Available for use!
-    var watch_name = Pebble.getActiveWatchInfo().model;
- 
-    if (watch_name.indexOf("pebble_time_steel") >= 0) {
-      watch_version = 4;
-    } else if (watch_name.indexOf("pebble_time_round") >= 0) {
-      watch_version = 5;
-    } else if (watch_name.indexOf("qemu_platform_chalk") >= 0) {
-      watch_version = 5;
-    } else if (watch_name.indexOf("pebble_time") >= 0) {
-      watch_version = 3;
-    } else if (watch_name.indexOf("qemu_platform_basalt") >= 0) {
-      watch_version = 3;
-    } else if (watch_name.indexOf("pebble_steel") >= 0) {
-      watch_version = 2;
+    var platform = Pebble.getActiveWatchInfo().platform;
+    if (platform.indexOf("basalt") >= 0
+      || platform.indexOf("chalk") >= 0
+      || platform.indexOf("emery") >= 0) {
+      has_color = true;
     }
   }
   
-  return watch_version;
+  return has_color;
 }

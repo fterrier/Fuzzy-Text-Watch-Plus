@@ -16,7 +16,7 @@ const Language LANG_SWEDISH = {
     "tolv"
   },
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
   .phrases = {
     "klockan är *$1 ",
     "fem över *$1 ",

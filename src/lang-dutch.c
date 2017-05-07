@@ -18,7 +18,7 @@ const Language LANG_DUTCH = {
 		"twaalf"
 	},
 
-#ifdef PBL_PLATFORM_CHALK
+#ifdef SCREEN_WIDE
 	.phrases = {
 		"*$1 uur ",
 		"vijf over *$1 ",

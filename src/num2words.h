@@ -11,6 +11,10 @@
 #define LANG_GE 7
 #define LANG_GW 8
 
+#if defined PBL_PLATFORM_CHALK || defined PBL_PLATFORM_EMERY
+	#define SCREEN_WIDE 1
+#endif 
+
 typedef struct {
 	const int const hours;
 	const int const pentaminutes;
