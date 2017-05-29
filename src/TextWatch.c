@@ -44,13 +44,13 @@ int messageTime = 3;
 // 2 = flick wrist (Y-axis)
 // 3 = Shake up/down (Z-axis)
 // 4 = Any shake
-int dateGesture = GESTURE_ANY;
+int dateGesture = GESTURE_OFF;
 
 // Notify when BT connection is lost?
 // 0 = off
 // 1 = text and light only
 // 2 = on
-int bt_lost_notification = BT_NOTIFY_ON;
+int bt_lost_notification = BT_NOTIFY_OFF;
 
 // Screen resolution. Set in the init function.
 int xres;
